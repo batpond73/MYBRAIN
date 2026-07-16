@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "myBrain",
-    "slug": "mybrain",
+    "slug": "mybrain-v2",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -20,15 +20,12 @@
       "backgroundColor": "#FFFFFF"
     },
     "web": {
+      "bundler": "metro",
+      "output": "single",
       "favicon": "./assets/images/icon.png"
     },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "https://replit.com/"
-        }
-      ],
+      "expo-router",
       "expo-font",
       "expo-web-browser",
       [

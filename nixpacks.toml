@@ -1,0 +1,14 @@
+# Nixpacks provider config for Railway.
+# Pins Node 20 so `expo export` and the runtime server run on the same engine.
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "npm-10_x"]
+
+[phases.install]
+cmds = ["npm install --no-audit --no-fund"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm run start"
