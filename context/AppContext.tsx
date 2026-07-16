@@ -21,6 +21,7 @@ interface AppState {
 }
 
 interface AppContextType extends AppState {
+  isLoaded: boolean;
   login: (email: string, clinicName: string) => Promise<void>;
   logout: () => Promise<void>;
   completeQuest: (quest: "quest1" | "quest2" | "quest3") => Promise<void>;
@@ -45,6 +46,7 @@ const defaultState: AppState = {
 
 const AppContext = createContext<AppContextType>({
   ...defaultState,
+  isLoaded: false,
   login: async () => {},
   logout: async () => {},
   completeQuest: async () => {},
@@ -57,6 +59,7 @@ const AppContext = createContext<AppContextType>({
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>(defaultState);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -67,7 +70,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           // Always reset hasSeenIntro — never restore from storage
           setState({ ...parsed, hasSeenIntro: false });
         }
-      } catch {}
+      } catch {} finally {
+        // Gate initial navigation until AsyncStorage restore settles,
+        // so children (e.g. (tabs)/index.tsx) don't fire <Redirect> before
+        // the Root Layout finishes mounting.
+        setIsLoaded(true);
+      }
     })();
   }, []);
 
@@ -118,7 +126,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ ...state, login, logout, completeQuest, setDoctorProfile, setPeriod, toggleDarkMode, markIntroSeen, allQuestsCompleted }}
+      value={{ ...state, isLoaded, login, logout, completeQuest, setDoctorProfile, setPeriod, toggleDarkMode, markIntroSeen, allQuestsCompleted }}
     >
       {children}
     </AppContext.Provider>
