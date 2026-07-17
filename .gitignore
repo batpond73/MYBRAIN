@@ -2,6 +2,9 @@
 
 # dependencies
 node_modules/
+# 이 레포는 Railway nixpacks 기반. package-lock.json은 히스토리에 없어서
+# 로컬 npm install로 생긴 lockfile은 커밋하지 않음.
+package-lock.json
 
 # Expo
 .expo/
