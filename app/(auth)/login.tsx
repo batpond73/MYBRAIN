@@ -19,13 +19,17 @@ import { useAppContext } from "@/context/AppContext";
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const { login } = useAppContext();
+  const { login, allQuestsCompleted } = useAppContext();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const passwordRef = useRef<TextInput>(null);
+
+  // 로그인 성공 후 이동 목적지: 관제탑 3단계 미완료면 (quest), 완료면 dashboard.
+  // 기존엔 무조건 /(tabs)로 replace해 2단계 리다이렉트가 걸리던 걸 정리.
+  const afterLogin = () => allQuestsCompleted ? "/dashboard" as const : "/(quest)" as const;
 
   const handleLogin = async () => {
     if (!userId || !password) { setError("아이디와 비밀번호를 입력해주세요."); return; }
@@ -34,19 +38,19 @@ export default function LoginScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await login(userId, "서울나눔치과의원");
     setLoading(false);
-    router.replace("/(tabs)");
+    router.replace(afterLogin());
   };
 
   const handleAppleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await login("apple_user", "서울나눔치과의원");
-    router.replace("/(tabs)");
+    router.replace(afterLogin());
   };
 
   const handleGoogleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await login("google_user", "서울나눔치과의원");
-    router.replace("/(tabs)");
+    router.replace(afterLogin());
   };
 
   return (
@@ -133,7 +137,13 @@ export default function LoginScreen() {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => router.back()} style={styles.switchLink}>
+          <TouchableOpacity
+            onPress={() => {
+              if (router.canGoBack()) router.back();
+              else router.replace("/(auth)/sign-up");
+            }}
+            style={styles.switchLink}
+          >
             <Text style={styles.switchText}>
               계정이 없으신가요? <Text style={styles.switchAccent}>무료 시작하기</Text>
             </Text>

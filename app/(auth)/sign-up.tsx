@@ -19,13 +19,16 @@ import { useAppContext } from "@/context/AppContext";
 
 export default function SignUpScreen() {
   const insets = useSafeAreaInsets();
-  const { login, completeQuest } = useAppContext();
+  const { login, completeQuest, allQuestsCompleted } = useAppContext();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const passwordRef = useRef<TextInput>(null);
+
+  // 로그인 성공 후 이동 목적지: 관제탑 3단계 미완료면 (quest), 완료면 dashboard.
+  const afterLogin = () => allQuestsCompleted ? "/dashboard" as const : "/(quest)" as const;
 
   const handleSignUp = async () => {
     if (!userId || !password) { setError("아이디와 비밀번호를 입력해주세요."); return; }
@@ -35,19 +38,19 @@ export default function SignUpScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await login(userId, "");
     setLoading(false);
-    router.replace("/(quest)");
+    router.replace(afterLogin());
   };
 
   const handleAppleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await login("apple_user", "");
-    router.replace("/(quest)");
+    router.replace(afterLogin());
   };
 
   const handleGoogleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await login("google_user", "");
-    router.replace("/(quest)");
+    router.replace(afterLogin());
   };
 
   const handleDemo = async () => {
