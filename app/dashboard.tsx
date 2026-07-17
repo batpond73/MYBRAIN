@@ -31,6 +31,15 @@ import {
   PRESCRIPTIONS,
   VOICE_PARSE_EXAMPLES,
 } from "@/constants/mockData";
+import { AxisTrendLine } from "@/components/dashboard/AxisTrendLine";
+import { InsightCard } from "@/components/dashboard/InsightCard";
+import { LaborCrossCard } from "@/components/dashboard/LaborCrossCard";
+import { LtvCacGauge } from "@/components/dashboard/LtvCacGauge";
+import { OverallVerdictHeader } from "@/components/dashboard/OverallVerdictHeader";
+import { RetentionTrio } from "@/components/dashboard/RetentionTrio";
+import { SectionHeader } from "@/components/dashboard/SectionHeader";
+import { UncollectedFunnel } from "@/components/dashboard/UncollectedFunnel";
+import { computeAxisScores, pickRootCause } from "@/lib/financialInsights";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -664,6 +673,50 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
     isResultMetric: false,
     upstreamKpiKeys: ["recallRate", "returnRate"],
   },
+  // HR × 재무 크로스 지표 — 인건비 자체는 HR 패널에서 관리하되,
+  // 인건비가 실제로 얼마의 순이익을 창출하는지는 재무 심층에서 판정.
+  laborProfitRatio: {
+    analysis: [
+      "현재 0.48x — 인건비 1원당 순이익 48원 창출 (안정기 목표 ≥ 1.0x 대비 절반)",
+      "인건비 비율 자체(35.4%)는 경고 수준이지만 순이익 창출 배수는 더 심각",
+      "원인: 순이익률 하락(17.0%, 5%p↓) + 인건비 초과분 380만원 동반 발생",
+    ],
+    solution: [
+      "① 오늘: 인건비 초과분 380만원 원인 = 목요일 오후 초과근무 3건 즉시 재배정",
+      "② 이번 주: 리콜/예방 매출 축 강화로 순이익률 회복 (인건비 조정 없이 배수 개선)",
+      "③ 다음 달: 배수 0.6x 목표 (인건비 유지 + 순이익 300만 회복)",
+    ],
+    effect: [
+      "배수 0.6x 달성 시 인당 순이익 250만원 회복",
+      "배수 1.0x = 안정기 진입 · 스태프 1인 추가 채용 시 순이익 방어 가능",
+      "장기: 배수 1.5x 이상 = 확장 투자·분원 검토 근거",
+    ],
+    action: "초과근무 재배정 · 리콜 캠페인 병행",
+    judgeType: "REL",
+    isResultMetric: true,
+    upstreamKpiKeys: ["netProfit", "laborCost"],
+  },
+  perStaffProfit: {
+    analysis: [
+      "이번 달 인당 순이익 1,669만원 (스태프 8명 기준)",
+      "안정기 병원 벤치마크(월 200만원/인) 대비 상위지만 감소 추세 3개월 연속",
+      "체어 6대 · 스태프 8명 구조에서 신규 채용 여력 없음 — 생산성 개선이 유일 지렛대",
+    ],
+    solution: [
+      "① 이번 주: 대기시간 22분 → 12분 단축 (Lean 낭비 제거)",
+      "② 이번 달: 체어 회전 55% → 80% (TOC 병목 해소)",
+      "③ 분기: 인당 순이익 2,000만/인 목표",
+    ],
+    effect: [
+      "체어 회전 25%p 개선 시 월 순이익 320만 추가 → 인당 순이익 +40만/인",
+      "대기시간 단축 시 NPS 동반 상승 → 재내원율 유지",
+      "인당 순이익 2,000만/인 = 스태프 1명 추가 채용 손익분기 확보",
+    ],
+    action: "체어 회전율 개선 즉시 시작",
+    judgeType: "REL",
+    isResultMetric: true,
+    upstreamKpiKeys: ["chairUtil", "hourlyProd"],
+  },
 };
 
 // ─────────────────────────────────────────────
@@ -884,6 +937,35 @@ export default function Dashboard() {
   // 오늘/이번 주/이번 달/분기 in the top filter row.
   const hr = HR_DATA_BY_PERIOD[period];
   const finance = FINANCE_DATA_BY_PERIOD[period];
+
+  // ── 20개 지표 통합분석 결과 (재무 심층 상단) ─────
+  const all20Snap = KPI_ALL20_BY_PERIOD[period];
+  const axisScores = computeAxisScores(all20Snap);
+  const rootCause = pickRootCause(all20Snap, KPI_BENCHMARKS.all20, ALL20_KEY_MAP);
+  const rootCauseCanonical = rootCause
+    ? KPI_BENCHMARKS.all20.find((k) => k.id === rootCause.kpiId) ?? null
+    : null;
+  const rootCauseSnap = rootCause ? all20Snap.find((s) => s.id === rootCause.kpiId) ?? null : null;
+
+  // 재무 심층 카드가 처방 modal에 넘길 kpi 메타. modal은 numeric
+  // current 및 benchmark를 요구하므로 finance 데이터를 numeric shape로 변환.
+  const FINANCE_KPIS: { id: string; name: string; unit: string; current: number; benchmark: number; direction: "lower" | "higher"; benchmarkLabel: string }[] = [
+    { id: "ltvCac",       name: "LTV:CAC 비율",       unit: "x",     current: finance.ltvCac.current,          benchmark: 3,   direction: "higher", benchmarkLabel: "≥ 3x" },
+    { id: "netProfit",    name: "월 순이익률",        unit: "%",     current: finance.netProfit.latest,        benchmark: finance.netProfit.benchmark, direction: "higher", benchmarkLabel: `≥ ${finance.netProfit.benchmark}%` },
+    { id: "returnRate",   name: "재내원율",           unit: "%",     current: finance.retention.returnRate,    benchmark: 70,  direction: "higher", benchmarkLabel: "≥ 70%" },
+    { id: "recallRate",   name: "리콜 성공률",        unit: "%",     current: finance.retention.recallRate,    benchmark: 70,  direction: "higher", benchmarkLabel: "≥ 70%" },
+    { id: "preventiveRecall", name: "예방·리콜 매출 비중", unit: "%", current: finance.retention.preventiveRatio, benchmark: 18, direction: "higher", benchmarkLabel: "≥ 18%" },
+    { id: "cancelRate",   name: "당일 취소율",        unit: "%",     current: finance.cancelRate.current,      benchmark: 3,   direction: "lower",  benchmarkLabel: "≤ 3%" },
+    { id: "uncollected",  name: "미수금 비율",        unit: "만원",  current: Math.round(finance.uncollected.total / 10_000), benchmark: 0, direction: "lower", benchmarkLabel: `≤ 총 매출의 1.5%` },
+    { id: "laborProfitRatio", name: "인건비 대비 순이익 배수", unit: "x", current: finance.laborProfitRatio.current, benchmark: finance.laborProfitRatio.benchmark, direction: "higher", benchmarkLabel: `≥ ${finance.laborProfitRatio.benchmark.toFixed(1)}x` },
+    { id: "perStaffProfit",   name: "인당 창출 순이익",    unit: "만원", current: finance.perStaffProfit.current,  benchmark: finance.perStaffProfit.benchmark, direction: "higher", benchmarkLabel: `≥ ${finance.perStaffProfit.benchmark}만원` },
+    // 기존 3카드 재활용
+    { id: "noShow",       name: "노쇼율",             unit: "%",     current: finance.noShowLatest,            benchmark: 4,   direction: "lower",  benchmarkLabel: "≤ 4%" },
+    { id: "bepDay",       name: "BEP 달성률",         unit: "%",     current: finance.bep.achievement,         benchmark: 100, direction: "higher", benchmarkLabel: "≥ 100%" },
+    // caseAcceptance는 adjustedTop3에 이미 period-scoped current가 있음.
+    // 여기 항목은 lookup fallback이 아예 안 걸릴 때의 안전값.
+    { id: "caseAcceptance", name: "상담 동의율",       unit: "%",     current: KPI_TOP3_BY_PERIOD[period].find(t => t.id === "caseAcceptance")?.current ?? 52, benchmark: 70, direction: "higher", benchmarkLabel: "≥ 70%" },
+  ];
 
   const [activePanel, setActivePanel] = useState(1);
   const [aiLoading, setAiLoading] = useState(false);
@@ -1201,21 +1283,127 @@ export default function Dashboard() {
           </ScrollView>
         </View>
 
-        {/* RIGHT: Finance */}
+        {/* RIGHT: Finance — 20개 지표 통합분석 + 3섹션 재무 심층 */}
         <View style={[styles.panel, { width: SCREEN_WIDTH }]}>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.panelContent}>
             <View style={styles.panelHeader}>
               <Feather name="trending-up" size={18} color="#FF3B30" />
               <Text style={styles.panelTitle}>재무 & 심층 분석</Text>
             </View>
+
+            {/* ── 종합 진단 헤더 (20개 지표 통합) ─────────────── */}
+            <OverallVerdictHeader
+              scores={axisScores}
+              verdict={finance.overallVerdict}
+              rootCause={rootCause}
+              rootCauseName={rootCauseCanonical?.name ?? null}
+              rootCauseCurrent={rootCauseSnap?.current ?? null}
+              rootCauseReason={finance.rootCauseReason}
+              onPressOverall={() => openKpiPrescription("overall")}
+              onPressRootCause={() => rootCause && openKpiPrescription(rootCause.kpiKey)}
+            />
+
+            {/* ═══ 섹션 1: 수익성 (Unit Economics) ══════════════ */}
+            <SectionHeader title="수익성" framework="Unit Economics (a16z 2024)" score={axisScores.profitability} />
+            <InsightCard tone="profit" text={finance.profitabilityInsight} />
+
+            <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("ltvCac")}>
+              <View style={styles.cardHeadRow}>
+                <Text style={styles.cardLabel}>LTV : CAC 비율</Text>
+                <Feather name="chevron-right" size={14} color="#CBD5E1" />
+              </View>
+              <LtvCacGauge current={finance.ltvCac.current} ltv={finance.ltvCac.ltv} cac={finance.ltvCac.cac} payback={finance.ltvCac.payback} />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("bepDay")}>
+              <View style={styles.cardHeadRow}>
+                <Text style={styles.cardLabel}>BEP 달성률</Text>
+                <Feather name="chevron-right" size={14} color="#CBD5E1" />
+              </View>
+              <Text style={[styles.cardBigNum, { color: "#00C853" }]}>{finance.bep.achievement}%</Text>
+              <View style={styles.barWrap}><View style={[styles.barFill, { width: `${Math.min(finance.bep.achievement, 100)}%` as any, backgroundColor: "#00C853" }]} /></View>
+              <Text style={styles.bepText}>목표 {formatKRW(finance.bep.target)} · 현재 {formatKRW(finance.bep.current)}</Text>
+              <Text style={styles.chartCaption}>{finance.bepCaption}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("netProfit")}>
+              <View style={styles.cardHeadRow}>
+                <Text style={styles.cardLabel}>월 순이익률 추이</Text>
+                <Feather name="chevron-right" size={14} color="#CBD5E1" />
+              </View>
+              <Text style={[styles.cardBigNum, { color: finance.netProfit.latest >= finance.netProfit.benchmark ? "#00C853" : "#FFB300", fontSize: 24 }]}>
+                {finance.netProfit.latest}%
+              </Text>
+              <AxisTrendLine
+                data={finance.netProfit.trend}
+                color={finance.netProfit.latest >= finance.netProfit.benchmark ? "#00C853" : "#FFB300"}
+                benchmark={finance.netProfit.benchmark}
+                benchmarkLabel={`벤치 ${finance.netProfit.benchmark}%`}
+                width={SCREEN_WIDTH - 80}
+              />
+              <Text style={styles.chartCaption}>연차 대비 목표 {finance.netProfit.benchmark}% · 현재 {finance.netProfit.latest}%</Text>
+            </TouchableOpacity>
+
             <View style={styles.card}>
-              <Text style={styles.cardLabel}>노쇼(No-Show) 추이</Text>
+              <Text style={styles.cardLabel}>HR × 재무 크로스</Text>
+              <LaborCrossCard
+                laborProfitRatio={finance.laborProfitRatio}
+                perStaffProfit={finance.perStaffProfit}
+                onPressLaborRatio={() => openKpiPrescription("laborProfitRatio")}
+                onPressPerStaff={() => openKpiPrescription("perStaffProfit")}
+              />
+              <Text style={styles.chartCaption}>인건비 자체는 좌측 HR 관제 · 여기는 순이익 창출 관점</Text>
+            </View>
+
+            {/* ═══ 섹션 2: 유지 (NRR · Value-Based Care) ═══════ */}
+            <SectionHeader title="유지" framework="NRR · Value-Based Care" score={axisScores.retention} />
+            <InsightCard tone="retention" text={finance.retentionInsight} />
+
+            <View style={styles.card}>
+              <Text style={styles.cardLabel}>재내원·리콜·예방 트리오</Text>
+              <RetentionTrio
+                returnRate={finance.retention.returnRate}
+                recallRate={finance.retention.recallRate}
+                preventiveRatio={finance.retention.preventiveRatio}
+                onPressKey={(k) => openKpiPrescription(k)}
+              />
+              <Text style={styles.chartCaption}>리콜 성공률이 재내원율의 upstream · 여기부터 개선</Text>
+            </View>
+
+            {/* ═══ 섹션 3: 리스크·현금 (Lean · 재무 기본) ═══════ */}
+            <SectionHeader title="리스크·현금" framework="Lean Healthcare · 재무 기본" score={axisScores.risk} />
+            <InsightCard tone="risk" text={finance.riskInsight} />
+
+            <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("noShow")}>
+              <View style={styles.cardHeadRow}>
+                <Text style={styles.cardLabel}>노쇼(No-Show) 추이</Text>
+                <Feather name="chevron-right" size={14} color="#CBD5E1" />
+              </View>
               <Text style={[styles.cardBigNum, { color: "#FF3B30", fontSize: 24 }]}>{finance.noShowLatest}% <Text style={{ color: "#FF3B30", fontSize: 16 }}>↑</Text></Text>
               <NoShowChart data={finance.noShowTrend} />
               <Text style={styles.chartCaption}>{finance.noShowCaption}</Text>
-            </View>
-            <View style={styles.card}>
-              <Text style={styles.cardLabel}>상담 거절 사유 분석</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("cancelRate")}>
+              <View style={styles.cardHeadRow}>
+                <Text style={styles.cardLabel}>당일 취소율 추이</Text>
+                <Feather name="chevron-right" size={14} color="#CBD5E1" />
+              </View>
+              <Text style={[styles.cardBigNum, { color: "#FF3B30", fontSize: 24 }]}>{finance.cancelRate.current}%</Text>
+              <AxisTrendLine
+                data={finance.cancelRate.trend}
+                color="#FF3B30"
+                benchmark={3}
+                benchmarkLabel="Lean ≤ 3%"
+                width={SCREEN_WIDTH - 80}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("caseAcceptance")}>
+              <View style={styles.cardHeadRow}>
+                <Text style={styles.cardLabel}>상담 거절 사유 분석</Text>
+                <Feather name="chevron-right" size={14} color="#CBD5E1" />
+              </View>
               {finance.rejectionReasons.map((r, i) => (
                 <View key={i} style={styles.rejectRow}>
                   <Text style={styles.rejectLabel}>{r.reason}</Text>
@@ -1226,14 +1414,15 @@ export default function Dashboard() {
                 </View>
               ))}
               <Text style={styles.chartCaption}>{finance.rejectionSampleCaption}</Text>
-            </View>
-            <View style={styles.card}>
-              <Text style={styles.cardLabel}>BEP 달성률</Text>
-              <Text style={[styles.cardBigNum, { color: "#00C853" }]}>{finance.bep.achievement}%</Text>
-              <View style={styles.barWrap}><View style={[styles.barFill, { width: `${Math.min(finance.bep.achievement, 100)}%` as any, backgroundColor: "#00C853" }]} /></View>
-              <Text style={styles.bepText}>목표 {formatKRW(finance.bep.target)} · 현재 {formatKRW(finance.bep.current)}</Text>
-              <Text style={styles.chartCaption}>{finance.bepCaption}</Text>
-            </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("uncollected")}>
+              <View style={styles.cardHeadRow}>
+                <Text style={styles.cardLabel}>미수금 회수 파이프라인</Text>
+                <Feather name="chevron-right" size={14} color="#CBD5E1" />
+              </View>
+              <UncollectedFunnel total={finance.uncollected.total} buckets={finance.uncollected.buckets} />
+            </TouchableOpacity>
           </ScrollView>
         </View>
       </ScrollView>
@@ -1345,10 +1534,17 @@ export default function Dashboard() {
 
       {/* KPI 처방전 모달 */}
       {prescriptionKpi !== null && (() => {
-        const rx = KPI_PRESCRIPTIONS[prescriptionKpi] ?? ALL20_PRESCRIPTIONS[prescriptionKpi];
-        const kpi: { name: string; unit: string; current: number; benchmark: number; direction: string; benchmarkLabel: string } | undefined =
-          KPI_BENCHMARKS.top3.find(k => k.id === prescriptionKpi)
-          ?? EXTRA_CRISIS_KPIS.find(k => k.id === prescriptionKpi);
+        // 'overall' 특수 키는 mockData의 period 스코프 통합 처방을 사용.
+        const isOverall = prescriptionKpi === "overall";
+        const rx = isOverall
+          ? finance.overallPrescription
+          : (KPI_PRESCRIPTIONS[prescriptionKpi] ?? ALL20_PRESCRIPTIONS[prescriptionKpi]);
+        const kpi: { name: string; unit: string; current: number | string; benchmark: number; direction: string; benchmarkLabel: string } | undefined =
+          isOverall
+            ? { name: "20개 지표 통합 처방", unit: "", current: `${axisScores.profitability}/${axisScores.retention}/${axisScores.risk}`, benchmark: 100, direction: "higher", benchmarkLabel: "3축 스코어" }
+            : (adjustedTop3.find(k => k.id === prescriptionKpi)
+               ?? adjustedExtraKpis.find(k => k.id === prescriptionKpi)
+               ?? FINANCE_KPIS.find(k => k.id === prescriptionKpi));
         return (
           <View style={styles.simOverlay}>
             <TouchableOpacity style={StyleSheet.absoluteFill} onPress={closeKpiPrescription} activeOpacity={1} />
@@ -1625,6 +1821,7 @@ const styles = StyleSheet.create({
   rejectPct: { fontSize: 12, color: "#00153D", width: 36, textAlign: "right" },
   bepText: { fontSize: 11, color: "#64748B" },
   chartCaption: { fontSize: 10, color: "#94A3B8", marginTop: 6, textAlign: "center" as const },
+  cardHeadRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 },
   // Evidence modal
   evidenceModal: { position: "absolute", bottom: 0, left: 0, right: 0, height: "75%", borderTopLeftRadius: 28, borderTopRightRadius: 28, overflow: "hidden", borderWidth: 1, borderColor: "#E8EDF5", shadowColor: "#00153D", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.1, shadowRadius: 16, elevation: 8 },
   evidenceInner: { flex: 1, padding: 20, gap: 14 },

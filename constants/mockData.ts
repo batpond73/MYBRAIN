@@ -145,7 +145,26 @@ type TrendPoint = { label: string; rate: number };
 type RejectionRow = { reason: string; count: number; percentage: number };
 type BepBlock = { target: number; current: number; achievement: number };
 
+// ── 신규: 3섹션 재구성용 확장 필드 ───────────────────────────────
+// 각 카드 데이터 (수익성·유지·리스크·현금 축).
+type LtvCacBlock = { current: number; ltv: number; cac: number; payback: number };
+type NetProfitBlock = { latest: number; benchmark: number; trend: TrendPoint[] };
+type RetentionBlock = { returnRate: number; recallRate: number; preventiveRatio: number };
+type CancelRateBlock = { current: number; trend: TrendPoint[] };
+type UncollectedBucket = { label: "30일 이내" | "30~60일" | "60~90일" | "90일 초과"; amount: number; collectableRate: number };
+type UncollectedBlock = { total: number; buckets: UncollectedBucket[] };
+type LaborCrossBlock = { current: number; benchmark: number };  // 순이익/인건비 배수, 인당 순이익
+
+// 통합 처방 shape — dashboard의 KpiPrescription과 정확히 일치.
+export type OverallPrescription = {
+  analysis: string[];
+  solution: string[];
+  effect: string[];
+  action: string;
+};
+
 export type FinancePeriodData = {
+  // ── 기존 3카드 ────────────────────────
   noShowLatest: number;
   noShowTrend: TrendPoint[];
   noShowCaption: string;
@@ -153,6 +172,28 @@ export type FinancePeriodData = {
   rejectionSampleCaption: string;
   bep: BepBlock;
   bepCaption: string;
+
+  // ── 신규 카드 데이터 ──────────────────
+  ltvCac: LtvCacBlock;
+  netProfit: NetProfitBlock;
+  retention: RetentionBlock;
+  cancelRate: CancelRateBlock;
+  uncollected: UncollectedBlock;
+  laborProfitRatio: LaborCrossBlock;  // 순이익 / 인건비 배수 (≥ 1.0 이상 안정기)
+  perStaffProfit: LaborCrossBlock;    // 스태프 1인당 창출 순이익 (만원)
+
+  // ── 통합 진단 (mock 텍스트, 스코어는 runtime 계산) ─
+  overallVerdict: string;             // 3축 판정 요약 1~2문장
+  rootCauseKpiKey: string;            // upstream count 가장 많은 위기 지표 (mock 확정값)
+  rootCauseReason: string;            // 왜 여기부터 손대야 하는지 (연쇄 개선 예시)
+
+  // ── 축별 통합 인사이트 문구 ───────────
+  profitabilityInsight: string;
+  retentionInsight: string;
+  riskInsight: string;
+
+  // ── 통합 AI 처방 (중앙 KpiPrescription 스키마와 동일) ─
+  overallPrescription: OverallPrescription;
 };
 
 export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarter", FinancePeriodData> = {
@@ -175,6 +216,69 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
     rejectionSampleCaption: "최근 7일 rolling 표본 (당일 표본 부족)",
     bep: { target: 1_733_000, current: 3_100_000, achievement: 178.9 },
     bepCaption: "일 고정비 173만 원 대비 오늘 매출",
+
+    ltvCac: { current: 3.5, ltv: 1_380_000, cac: 394_000, payback: 11 },
+    netProfit: {
+      latest: 21.4, benchmark: 22,
+      trend: [
+        { label: "09시", rate: 18.5 },
+        { label: "11시", rate: 19.8 },
+        { label: "13시", rate: 20.6 },
+        { label: "15시", rate: 21.0 },
+        { label: "17시", rate: 21.4 },
+      ],
+    },
+    retention: { returnRate: 76, recallRate: 63, preventiveRatio: 7.1 },
+    cancelRate: {
+      current: 6.7,
+      trend: [
+        { label: "09시", rate: 4.2 },
+        { label: "11시", rate: 5.8 },
+        { label: "13시", rate: 6.2 },
+        { label: "15시", rate: 6.7 },
+        { label: "17시", rate: 6.7 },
+      ],
+    },
+    uncollected: {
+      total: 992_000,
+      buckets: [
+        { label: "30일 이내", amount: 620_000, collectableRate: 92 },
+        { label: "30~60일", amount: 220_000, collectableRate: 71 },
+        { label: "60~90일", amount: 108_000, collectableRate: 44 },
+        { label: "90일 초과", amount: 44_000,  collectableRate: 18 },
+      ],
+    },
+    laborProfitRatio: { current: 0.71, benchmark: 1.0 },
+    perStaffProfit:   { current: 83, benchmark: 200 },
+
+    overallVerdict: "오늘 하루 수익성 성숙 · 유지 정상 · 리스크 관리 진행 중",
+    rootCauseKpiKey: "recallRate",
+    rootCauseReason: "리콜 성공률 63%가 재내원율·환자 LTV·예방매출·순이익률 4개의 상류. 여기부터 손대면 4개 지표 동시 회복.",
+
+    profitabilityInsight:
+      "일 매출 310만 · 순이익률 21.4% · LTV:CAC 3.5x · 인당 순이익 83만원 = 오늘 하루는 벌었지만 안정기 병원 인당 목표(200만원/월)의 41% 수준 — 오늘 지표 유지가 관건.",
+    retentionInsight:
+      "재내원율 76%(최우수) 대비 리콜 성공률 63%(경고)로 gap 13%p. 예방 매출 비중 7.1%는 위기 임계값(12%) 아래로 절반 수준.",
+    riskInsight:
+      "노쇼 5.0% + 당일 취소 6.7% + 상담 거절 50% + 미수금 99만원. 오늘 매출 누수 추정 42만원 — 리마인드 문자 2건과 미회수 콜 1건으로 즉시 방어 가능.",
+    overallPrescription: {
+      analysis: [
+        "오늘 하루 3축 스코어 — 수익성 78 / 유지 68 / 리스크 55",
+        "리콜 성공률 63% 하나가 재내원율·환자 LTV·예방매출·순이익률 4개의 상류",
+        "오늘 리콜 도래 환자 5명 중 3명 예약 미확정 · 방치 시 이번 주 자연 이탈",
+      ],
+      solution: [
+        "① 오늘 15시 이전: 리콜 도래 환자 5명 전원에 예약 문자 발송",
+        "② 오늘 마감 전: 미수금 99만원 중 90일 초과 4.4만원 전화 회수",
+        "③ 내일 진료 전: 목요일 오후 초과근무 예방 위해 예약 3건 재배정",
+      ],
+      effect: [
+        "리콜 5명 예약 확정 시 재내원율 4주 뒤 76% → 78% 유지",
+        "미수금 회수 콜 1건 = 오늘 확정 매출 4.4만원 방어",
+        "초과근무 재배정 = 인건비 초과분 즉시 차단 · 배수 개선",
+      ],
+      action: "리콜 문자 5건 · 회수 콜 1건 · 예약 재배정 3건 오늘 즉시 실행",
+    },
   },
   week: {
     noShowLatest: 7.4,
@@ -195,6 +299,69 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
     rejectionSampleCaption: "이번 주 상담 60건 표본",
     bep: { target: 12_133_000, current: 18_600_000, achievement: 153.3 },
     bepCaption: "주 고정비 1,213만 원 대비 이번 주 매출",
+
+    ltvCac: { current: 3.6, ltv: 1_400_000, cac: 389_000, payback: 11 },
+    netProfit: {
+      latest: 19.2, benchmark: 22,
+      trend: [
+        { label: "월", rate: 22.4 },
+        { label: "화", rate: 20.8 },
+        { label: "수", rate: 18.5 },
+        { label: "목", rate: 17.9 },
+        { label: "금", rate: 19.2 },
+      ],
+    },
+    retention: { returnRate: 75, recallRate: 62, preventiveRatio: 6.5 },
+    cancelRate: {
+      current: 7.5,
+      trend: [
+        { label: "월", rate: 5.8 },
+        { label: "화", rate: 6.4 },
+        { label: "수", rate: 7.0 },
+        { label: "목", rate: 8.3 },
+        { label: "금", rate: 7.5 },
+      ],
+    },
+    uncollected: {
+      total: 6_240_000,
+      buckets: [
+        { label: "30일 이내", amount: 3_650_000, collectableRate: 89 },
+        { label: "30~60일", amount: 1_420_000, collectableRate: 68 },
+        { label: "60~90일", amount: 720_000,   collectableRate: 42 },
+        { label: "90일 초과", amount: 450_000, collectableRate: 17 },
+      ],
+    },
+    laborProfitRatio: { current: 0.53, benchmark: 1.0 },
+    perStaffProfit:   { current: 447, benchmark: 200 },
+
+    overallVerdict: "이번 주 수익성 성숙 · 유지 균열 시작 · 리스크 확대 중",
+    rootCauseKpiKey: "recallRate",
+    rootCauseReason: "리콜 성공률 62%(경고)가 재내원율·환자 LTV·예방매출·순이익률 4개의 상류. 이번 주 리콜 도래 환자 38명에 예약 문자 발송 시 3~4주 뒤 4개 지표 동시 회복.",
+
+    profitabilityInsight:
+      "주 매출 1,860만 · 순이익률 19.2% · LTV:CAC 3.6x = Unit Economics 정상 구간 유지 중. 인건비 대비 순이익 배수 0.53x — 안정기 목표(1.0x)의 절반이라 확장 투자는 아직 이름.",
+    retentionInsight:
+      "재내원율 75% 대비 리콜 성공률 62% gap 13%p로 재내원 파이프에서 새는 중. 예방 매출 6.5%는 위기 임계값(12%) 아래 — NRR 축 균열 신호.",
+    riskInsight:
+      "노쇼 7.4% + 당일 취소 7.5% + 상담 거절 51% + 미수금 624만원. 이번 주 매출 누수 추정 145만원 — 리마인드 자동화·분납 옵션·회수 콜로 이 중 90만원 방어 가능.",
+    overallPrescription: {
+      analysis: [
+        "이번 주 3축 스코어 — 수익성 76 / 유지 55 / 리스크 48",
+        "리콜 성공률 62%(경고) 방치 시 4주 뒤 재내원율 75% → 68% 하락 예상",
+        "이번 주 매출 누수 145만원 확정 · 다음 주 그대로면 누수 200만원 초과",
+      ],
+      solution: [
+        "① 오늘: 리콜 도래 환자 38명에 자동 예약 문자 발송 (Tsheet or SMS)",
+        "② 이번 주 안: 상담 거절 사례 51건 중 '비용 부담' 26건에 분납 옵션 재제안",
+        "③ 이번 주 안: 미수금 60일+ 1,170만원 순차 회수 콜 (하루 5건 x 4일)",
+      ],
+      effect: [
+        "리콜 문자 발송 → 3~4주 뒤 재내원율 유지 · 환자 LTV 방어",
+        "분납 재제안 20% 성공 시 이번 주 잠재 매출 130만원 회수",
+        "미수금 90만원 회수 = 이번 주 매출 누수의 60% 방어",
+      ],
+      action: "리콜 문자 자동 · 분납 재제안 · 회수 콜 병렬 시작",
+    },
   },
   month: {
     noShowLatest: 8.7,
@@ -214,6 +381,68 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
     rejectionSampleCaption: "이번 달 상담 43건 표본",
     bep: { target: 52_000_000, current: 78_500_000, achievement: 150.9 },
     bepCaption: "월 고정비 5,200만 원 대비 이번 달 매출",
+
+    ltvCac: { current: 3.7, ltv: 1_410_000, cac: 381_000, payback: 10 },
+    netProfit: {
+      latest: 17.0, benchmark: 22,
+      trend: [
+        { label: "1월", rate: 19.2 },
+        { label: "2월", rate: 18.5 },
+        { label: "3월", rate: 18.1 },
+        { label: "4월", rate: 17.4 },
+        { label: "5월", rate: 17.0 },
+      ],
+    },
+    retention: { returnRate: 74, recallRate: 61, preventiveRatio: 6.2 },
+    cancelRate: {
+      current: 8.7,
+      trend: [
+        { label: "1주", rate: 6.2 },
+        { label: "2주", rate: 7.5 },
+        { label: "3주", rate: 8.1 },
+        { label: "4주", rate: 8.7 },
+      ],
+    },
+    uncollected: {
+      total: 36_890_000,
+      buckets: [
+        { label: "30일 이내", amount: 18_400_000, collectableRate: 88 },
+        { label: "30~60일", amount: 9_800_000,  collectableRate: 65 },
+        { label: "60~90일", amount: 5_890_000,  collectableRate: 40 },
+        { label: "90일 초과", amount: 2_800_000, collectableRate: 15 },
+      ],
+    },
+    laborProfitRatio: { current: 0.48, benchmark: 1.0 },
+    perStaffProfit:   { current: 1_669, benchmark: 200 },
+
+    overallVerdict: "이번 달 수익성 성숙 · 유지 균열 · 리스크 확대 (3축 불균형)",
+    rootCauseKpiKey: "recallRate",
+    rootCauseReason: "리콜 성공률 61%(경고)가 재내원율·환자 LTV·예방매출·순이익률·마케팅 ROI 5개의 상류. 스케일링 리콜 캠페인 4주 집행 시 5개 지표 동시 회복 예상.",
+
+    profitabilityInsight:
+      "월 매출 7,850만 · 순이익률 17.0%(연차 대비 -5%p) · LTV:CAC 3.7x · BEP 10일. Unit Economics 정상이나 순이익률 하락 추세 — 리콜/재내원 회복 없으면 다음 분기 15%대까지 후퇴 우려.",
+    retentionInsight:
+      "재내원율 74%(최우수) 지지대 위에 리콜 성공률 61%·예방 매출 6.2%(위기) 두 축 흔들림. NRR 관점에서는 기존 환자의 재구매 파이프가 4주 안에 멈출 리스크.",
+    riskInsight:
+      "노쇼 8.7% + 당일 취소 8.7% + 상담 거절 60% + 미수금 3,689만원. 이번 달 매출 누수 720만원 확정 — 리마인드 자동화 + 분납 옵션 + 회수 콜 세 액션으로 480만원 즉시 방어.",
+    overallPrescription: {
+      analysis: [
+        "이번 달 3축 스코어 — 수익성 74 / 유지 46 / 리스크 42 (유지·리스크 위기 진입)",
+        "리콜 성공률 61% 원인으로 재내원율·환자 LTV·예방매출·순이익률·마케팅ROI 5개 동시 하락",
+        "이번 달 매출 누수 720만원 확정 · 방치 시 다음 달 순이익률 15%대 후퇴",
+      ],
+      solution: [
+        "① 이번 주: 스케일링 리콜 캠페인 시작 (도래 환자 전원 자동 예약 문자)",
+        "② 이번 달 안: 상담 거절 60% 중 '비용 부담' 42% 대상 분납 옵션 표준 도입",
+        "③ 이번 달 안: 미수금 60~90일 5,890만원 순차 회수 (하루 5건 · 4주)",
+      ],
+      effect: [
+        "리콜 성공률 61% → 70% 회복 → 재내원율 78%·환자 LTV 165만·예방매출 8%p 상승",
+        "분납 도입 20% 성공 = 이번 달 잠재 매출 420만원 회수 · 상담 동의율 62%로 회복",
+        "미수금 회수 480만원 = 이번 달 매출 누수의 67% 방어",
+      ],
+      action: "리콜 캠페인 · 분납 표준화 · 회수 콜 3면 동시 실행",
+    },
   },
   quarter: {
     noShowLatest: 6.7,
@@ -232,6 +461,65 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
     rejectionSampleCaption: "분기 상담 136건 표본",
     bep: { target: 156_000_000, current: 218_500_000, achievement: 140.1 },
     bepCaption: "분기 고정비 1억 5,600만 원 대비 분기 매출",
+
+    ltvCac: { current: 3.9, ltv: 1_430_000, cac: 367_000, payback: 9 },
+    netProfit: {
+      latest: 16.3, benchmark: 22,
+      trend: [
+        { label: "3월", rate: 18.1 },
+        { label: "4월", rate: 17.0 },
+        { label: "5월", rate: 16.3 },
+      ],
+    },
+    retention: { returnRate: 72, recallRate: 58, preventiveRatio: 5.9 },
+    cancelRate: {
+      current: 7.8,
+      trend: [
+        { label: "3월", rate: 6.5 },
+        { label: "4월", rate: 7.2 },
+        { label: "5월", rate: 8.7 },
+      ],
+    },
+    uncollected: {
+      total: 102_640_000,
+      buckets: [
+        { label: "30일 이내", amount: 42_800_000, collectableRate: 87 },
+        { label: "30~60일", amount: 31_200_000, collectableRate: 62 },
+        { label: "60~90일", amount: 19_800_000, collectableRate: 38 },
+        { label: "90일 초과", amount: 8_840_000,  collectableRate: 14 },
+      ],
+    },
+    laborProfitRatio: { current: 0.46, benchmark: 1.0 },
+    perStaffProfit:   { current: 4_453, benchmark: 200 },
+
+    overallVerdict: "이번 분기 수익성 성숙 · 유지 위기 진입 · 리스크 확대 (구조 조정 필요)",
+    rootCauseKpiKey: "recallRate",
+    rootCauseReason: "리콜 성공률 58%(위기 진입)가 유지 축 3개 지표를 동시에 끌어내리는 중. 분기 리콜 파이프라인 재설계 없이는 다음 분기 LTV·순이익률 추가 하락 확실.",
+
+    profitabilityInsight:
+      "분기 매출 2억 1,850만 · 순이익률 16.3%(3개월 연속 하락) · LTV:CAC 3.9x. 인당 순이익 4,453만원은 안정기 벤치마크 대비 상위지만 감소 추세 — 유지 축 개선이 다음 분기 수익성 유지의 유일한 지렛대.",
+    retentionInsight:
+      "재내원율 72%·리콜 성공률 58%(위기)·예방 매출 5.9%(위기) — NRR 3지표 중 2개가 위기. 신환 유치보다 5배 저비용인 유지 파이프가 무너지는 중이라 분기 재설계 시급.",
+    riskInsight:
+      "노쇼 6.7%(개선) + 당일 취소 7.8% + 상담 거절 62% + 미수금 1억 264만원. 90일 초과 미수금 884만원은 회수 확률 14%로 사실상 손실 확정 — 이번 분기 안에 회수 아니면 대손 처리 검토.",
+    overallPrescription: {
+      analysis: [
+        "이번 분기 3축 스코어 — 수익성 72 / 유지 38 / 리스크 40 (유지 위기 진입)",
+        "리콜 성공률 58%(위기) 3개월 연속 하락 · 재내원율·예방매출 동반 감소",
+        "분기 매출 2억 1,850만 유지하고 있으나 순이익률 16.3%로 3개월 연속 하락 추세",
+      ],
+      solution: [
+        "① 이번 주: 분기 리콜 파이프라인 전면 재설계 (담당 지정 · KPI 주간 리뷰)",
+        "② 다음 달: 예방 패키지 상품 정식 도입 (스케일링+X-ray+구강검사 세트)",
+        "③ 분기 안: 90일 초과 미수금 884만원 회수/대손 결단 · 재무 클린업",
+      ],
+      effect: [
+        "리콜 재설계 시 다음 분기 재내원율 72% → 76% · 순이익률 반등 예상",
+        "예방 패키지 도입 시 예방 매출 비중 5.9% → 12% 4주 안에 진입",
+        "미수금 대손 처리 시 재무제표 정리 · 신규 미수 방지 정책 병행",
+      ],
+      action: "리콜 재설계 · 예방 패키지 · 미수 정리 3면 착수",
+    },
   },
 };
 
