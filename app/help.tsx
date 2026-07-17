@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import React, { useState } from "react";
 import {
   LayoutAnimation,
@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HomeFab } from "@/components/HomeFab";
 import { NpsExportCard } from "@/components/help/NpsExportCard";
 import { NpsSurveyForm } from "@/components/help/NpsSurveyForm";
+import { useAppContext } from "@/context/AppContext";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -380,6 +381,14 @@ const GLOSSARY: {
 
 // ── 화면 ────────────────────────────────────────────────────────
 export default function HelpScreen() {
+  // Auth gate wrapper — hooks 순서 안전.
+  const { isLoaded, isAuthenticated } = useAppContext();
+  if (!isLoaded) return null;
+  if (!isAuthenticated) return <Redirect href="/(auth)/sign-up" />;
+  return <HelpScreenInner />;
+}
+
+function HelpScreenInner() {
   const insets = useSafeAreaInsets();
   const [openKeys, setOpenKeys] = useState<Set<string>>(new Set());
 

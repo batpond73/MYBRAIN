@@ -1,12 +1,13 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HomeFab } from "@/components/HomeFab";
 import { KPI_HISTORY, KpiHistoryData, KpiStatus, TrendResult } from "@/constants/historyData";
+import { useAppContext } from "@/context/AppContext";
 
 const STATUS_COLOR: Record<KpiStatus, string> = {
   crisis:  "#FF3B30",
@@ -267,6 +268,14 @@ const FILTER_COUNTS = (filter: FilterType) =>
   filter === "전체" ? KPI_HISTORY.length : KPI_HISTORY.filter((d) => matchesFilter(d, filter)).length;
 
 export default function History() {
+  // Auth gate wrapper — hooks 순서 안전.
+  const { isLoaded, isAuthenticated } = useAppContext();
+  if (!isLoaded) return null;
+  if (!isAuthenticated) return <Redirect href="/(auth)/sign-up" />;
+  return <HistoryInner />;
+}
+
+function HistoryInner() {
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<FilterType>("전체");
 

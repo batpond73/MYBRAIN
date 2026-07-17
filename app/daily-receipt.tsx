@@ -3,7 +3,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -21,6 +21,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HomeFab } from "@/components/HomeFab";
+import { useAppContext } from "@/context/AppContext";
 
 const CATEGORIES = [
   { id: "material",   label: "재료비",   color: "#33A6FF", bg: "#EBF5FF" },
@@ -63,6 +64,14 @@ function todayLabel() {
 }
 
 export default function DailyReceipt() {
+  // Auth gate wrapper — hooks 순서 안전.
+  const { isLoaded, isAuthenticated } = useAppContext();
+  if (!isLoaded) return null;
+  if (!isAuthenticated) return <Redirect href="/(auth)/sign-up" />;
+  return <DailyReceiptInner />;
+}
+
+function DailyReceiptInner() {
   const insets = useSafeAreaInsets();
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [sheetOpen, setSheetOpen] = useState(false);

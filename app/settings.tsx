@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, Animated, LayoutAnimation, PanResponder, Platform, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, UIManager, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -70,6 +70,14 @@ const SLIDER_DEFS = [
 ];
 
 export default function Settings() {
+  // Auth gate wrapper — hooks 순서 안전.
+  const { isLoaded, isAuthenticated } = useAppContext();
+  if (!isLoaded) return null;
+  if (!isAuthenticated) return <Redirect href="/(auth)/sign-up" />;
+  return <SettingsInner />;
+}
+
+function SettingsInner() {
   const insets = useSafeAreaInsets();
   const { clinicName, userId, questsCompleted, doctorProfile, setDoctorProfile, logout } = useAppContext();
   const [notify, setNotify] = useState(true);
