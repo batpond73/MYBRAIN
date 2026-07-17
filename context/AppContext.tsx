@@ -34,7 +34,7 @@ interface AppContextType extends AppState {
 
 const defaultState: AppState = {
   isAuthenticated: false,
-  hasSeenIntro: false, // intentionally NOT persisted to AsyncStorage
+  hasSeenIntro: false,
   userId: "",
   clinicName: "",
   clinicTenureYears: 3, // v0.4: REL 판정용 개원 연차 (0=신규, 3=안정기, 7+=성숙)
@@ -67,8 +67,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const saved = await AsyncStorage.getItem("mybrain_state");
         if (saved) {
           const parsed = JSON.parse(saved);
-          // Always reset hasSeenIntro — never restore from storage
-          setState({ ...parsed, hasSeenIntro: false });
+          // hasSeenIntro도 저장·복원 (웹 새로고침마다 intro 재생 방지).
+          // 이전엔 명시적으로 리셋하던 걸 정정 — 재로그인·재방문 UX 마찰 큼.
+          setState({ ...defaultState, ...parsed });
         }
       } catch {} finally {
         // Gate initial navigation until AsyncStorage restore settles,
@@ -82,9 +83,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const save = async (newState: AppState) => {
     setState(newState);
     try {
-      // Strip hasSeenIntro before persisting — it must always reset on app load
-      const { hasSeenIntro: _skip, ...persistable } = newState;
-      await AsyncStorage.setItem("mybrain_state", JSON.stringify(persistable));
+      // hasSeenIntro 포함 전체 저장.
+      await AsyncStorage.setItem("mybrain_state", JSON.stringify(newState));
     } catch {}
   };
 
@@ -117,8 +117,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const markIntroSeen = async () => {
-    // Only update in-memory state — never persist intro flag to AsyncStorage
-    setState((s) => ({ ...s, hasSeenIntro: true }));
+    await save({ ...state, hasSeenIntro: true });
   };
 
   const allQuestsCompleted =
