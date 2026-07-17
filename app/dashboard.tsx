@@ -1572,6 +1572,14 @@ export default function Dashboard() {
                 <View style={styles.crisisBadge}><Text style={styles.crisisBadgeText}>🚨 위기 처방전</Text></View>
                 <Text style={styles.rxKpiName}>{kpi?.name}</Text>
                 <Text style={[styles.crisisValue, { fontSize: 26 }]}>{kpi?.current}{kpi?.unit}</Text>
+                {period !== "month" && !isOverall && (
+                  <View style={styles.rxPeriodNotice}>
+                    <Feather name="info" size={11} color="#8B5CF6" />
+                    <Text style={styles.rxPeriodNoticeText}>
+                      처방문은 이달 기준 예시입니다. 상단 값은 현재 선택하신 {PERIOD_LABELS.find(l => l.key === period)?.label} 기준.
+                    </Text>
+                  </View>
+                )}
               </View>
 
               <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
@@ -1801,6 +1809,12 @@ const styles = StyleSheet.create({
   rxSheet: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "#fff", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, maxHeight: "85%", shadowColor: "#000", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.12, shadowRadius: 16, elevation: 20 },
   rxHeader: { marginBottom: 16, gap: 6 },
   rxKpiName: { fontSize: 22, fontWeight: "900" as const, color: "#00153D" },
+  rxPeriodNotice: {
+    flexDirection: "row" as const, alignItems: "center", gap: 5,
+    backgroundColor: "#F5F3FF", borderRadius: 8, paddingHorizontal: 9, paddingVertical: 6,
+    borderWidth: 1, borderColor: "#EDE9FE", marginTop: 4,
+  },
+  rxPeriodNoticeText: { fontSize: 10, color: "#7C3AED", flex: 1, lineHeight: 14, fontWeight: "600" as const },
   rxSection: { backgroundColor: "#F5F7FA", borderRadius: 14, padding: 14, marginBottom: 12 },
   rxSectionLabel: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8 },
   rxSectionTitle: { fontSize: 13, fontWeight: "700" as const, color: "#FF3B30" },
