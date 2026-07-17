@@ -146,7 +146,13 @@ export default function Settings() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity
+          onPress={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace("/dashboard");
+          }}
+          style={styles.backBtn}
+        >
           <Feather name="chevron-left" size={26} color="#00153D" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>설정 · 마이페이지</Text>
@@ -393,7 +399,14 @@ export default function Settings() {
             />
           </View>
           <View style={styles.divider} />
-          <TouchableOpacity style={styles.settingRow} activeOpacity={0.75}>
+          <TouchableOpacity
+            style={styles.settingRow}
+            activeOpacity={0.75}
+            onPress={async () => {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/help" as any);
+            }}
+          >
             <Feather name="help-circle" size={18} color="#64748B" />
             <Text style={styles.settingLabel}>도움말 · 사용 가이드</Text>
             <Feather name="chevron-right" size={16} color="#CBD5E1" />
