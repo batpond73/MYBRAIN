@@ -70,7 +70,7 @@ export function RetentionTrio({
   const rows: Row[] = [
     { key: "returnRate",       label: "재내원율",     value: returnRate,     benchmark: 70, criticalBelow: 40, suffix: "%", hint: "치료 후 다시 오는 비율" },
     { key: "recallRate",       label: "리콜 성공률",  value: recallRate,     benchmark: 70, criticalBelow: 50, suffix: "%", hint: "안내 → 예약 성공률 · upstream" },
-    { key: "preventiveRecall", label: "예방 매출 비중", value: preventiveRatio, benchmark: 18, criticalBelow: 12, suffix: "%", hint: "전체 매출 중 스케일링/검진 비중" },
+    { key: "preventiveRecall", label: "예방·리콜 매출 비중", value: preventiveRatio, benchmark: 18, criticalBelow: 12, suffix: "%", hint: "전체 매출 중 스케일링/검진 비중" },
   ];
 
   return (

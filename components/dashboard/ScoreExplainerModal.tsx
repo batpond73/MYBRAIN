@@ -14,7 +14,7 @@ type Props = {
 };
 
 const BAND_INFO = [
-  { min: 85, max: 100, label: "우수", color: "#00C853", bg: "#EDFFF5", meaning: "이 축은 지금 아주 건강합니다. 유지가 목표." },
+  { min: 85, max: 100, label: "최우수", color: "#00C853", bg: "#EDFFF5", meaning: "이 축은 지금 아주 건강합니다. 유지가 목표." },
   { min: 60, max: 84,  label: "정상", color: "#33A6FF", bg: "#EBF5FF", meaning: "평균 이상. 몇 개 지표만 손보면 우수 진입 가능." },
   { min: 40, max: 59,  label: "경고", color: "#FFB300", bg: "#FFF8E7", meaning: "이 축의 지표 절반 정도가 흔들리는 중. 원인 파악 필요." },
   { min: 0,  max: 39,  label: "위기", color: "#FF3B30", bg: "#FFF0EE", meaning: "여러 지표가 임계값을 넘음. 이번 주 안에 우선 대응 필요." },
@@ -55,7 +55,7 @@ export function ScoreExplainerModal({ visible, onClose, scores }: Props) {
                 축별로 평균을 내면 이 점수가 나옵니다.
               </Text>
               <Text style={styles.summaryTextSmall}>
-                * 여러 레퍼런스에서 반복 등장하는 핵심 지표(예: LTV:CAC·재내원율·리콜 성공률·순이익률·예방 매출 비중)는 평균에서 <Text style={styles.summaryBold}>2배 반영</Text>됩니다.
+                * 여러 레퍼런스에서 반복 등장하는 핵심 지표(예: LTV:CAC·재내원율·리콜 성공률·순이익률·예방·리콜 매출 비중)는 평균에서 <Text style={styles.summaryBold}>2배 반영</Text>됩니다.
               </Text>
             </View>
 
@@ -71,7 +71,7 @@ export function ScoreExplainerModal({ visible, onClose, scores }: Props) {
                   ] as const
                 ).map((axis) => {
                   const band = bandOf(axis.score);
-                  const info = BAND_INFO.find((b) => band === "excellent" && b.label === "우수"
+                  const info = BAND_INFO.find((b) => band === "excellent" && b.label === "최우수"
                     || band === "healthy" && b.label === "정상"
                     || band === "risk" && b.label === "경고"
                     || band === "critical" && b.label === "위기")!;

@@ -77,10 +77,10 @@ type KpiPrescription = {
 const EXTRA_CRISIS_KPIS = [
   {
     id: "cancelRate",
-    name: "예약 당일 취소율",
+    name: "당일 취소율",
     unit: "%",
     current: 8.7,
-    benchmark: 5,
+    benchmark: 3,
     direction: "lower" as const,
     benchmarkLabel: "≤ 3%",
     impact: "이달 방치 시 손실 약 180만 원 — Lean 기준 초과 5.7%p",
@@ -410,9 +410,10 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   staffTurnover: {
     analysis: [
-      "현재 19% — Lean Healthcare 기준(>15% 경고, >25% 위기) 경고 단계",
+      "현재 12% — Lean Healthcare 기준(>15% 경고, >25% 위기) 정상 구간 · 여유 있음",
       "v0.4 정정: ≤10% 일괄 기준 폐기 — 소규모 의원 왜곡 방지, 규모별 보조 판정",
-      "이직 1명 비용 = 채용+교육+생산성 손실 합산 약 500만 원",
+      "다만 최하늘 위생사 연속 7일 근무 = 개별 번아웃 리스크는 별개 관리",
+      "이직 1명 비용 = 채용+교육+생산성 손실 합산 약 500만 원 — 미리 방지 목적",
     ],
     solution: [
       "① 오늘: 최하늘 위생사 연속 7일 근무 → 내일 즉시 휴무 배정",

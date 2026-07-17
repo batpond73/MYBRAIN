@@ -23,7 +23,7 @@ const BAND_LABEL: Record<ScoreBand, string> = {
   critical:  "위기",
   risk:      "경고",
   healthy:   "정상",
-  excellent: "우수",
+  excellent: "최우수",
 };
 
 export function AxisScoreBadge({
