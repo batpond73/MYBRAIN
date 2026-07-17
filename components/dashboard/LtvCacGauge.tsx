@@ -99,7 +99,9 @@ export function LtvCacGauge({
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: "center", gap: 6 },
+  // alignSelf: center — 부모 카드가 220px보다 넓어도 게이지가 카드 중앙에
+  // 위치. alignItems는 내부 자식(Svg·metaRow·caption) 가로 정렬용.
+  wrap: { alignItems: "center", alignSelf: "center", gap: 6 },
   metaRow: {
     flexDirection: "row",
     alignItems: "center",
