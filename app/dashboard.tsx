@@ -1001,6 +1001,13 @@ export default function Dashboard() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
+        onScroll={(e) => {
+          // Web has no momentum-end event on mouse/trackpad scroll, so drive
+          // the dot indicator off every scroll frame; the guard keeps native
+          // rerenders bounded.
+          const idx = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+          if (idx !== activePanel && idx >= 0 && idx <= 2) setActivePanel(idx);
+        }}
         onMomentumScrollEnd={(e) => setActivePanel(Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH))}
         style={styles.panelScroll}
       >
