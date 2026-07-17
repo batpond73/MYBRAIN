@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
+import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -17,6 +18,32 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppProvider } from "@/context/AppContext";
 
 SplashScreen.preventAutoHideAsync();
+
+// react-native-web renders TextInput as native <input>/<textarea>, so the
+// browser draws its default focus ring inside the styled wrapper. Kill it
+// once at the root — new inputs added later inherit the reset for free.
+if (Platform.OS === "web" && typeof document !== "undefined") {
+  const STYLE_ID = "mybrain-input-reset";
+  if (!document.getElementById(STYLE_ID)) {
+    const el = document.createElement("style");
+    el.id = STYLE_ID;
+    el.textContent = `
+      input, textarea, select, [contenteditable="true"] {
+        outline: none !important;
+        -webkit-tap-highlight-color: transparent;
+      }
+      input:focus, input:focus-visible,
+      textarea:focus, textarea:focus-visible,
+      select:focus, select:focus-visible,
+      [contenteditable="true"]:focus,
+      [contenteditable="true"]:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+    `;
+    document.head.appendChild(el);
+  }
+}
 
 const queryClient = new QueryClient();
 
