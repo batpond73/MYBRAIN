@@ -374,8 +374,8 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   hourlyProd: {
     analysis: [
-      "현재 31.2만원/h — ToC 기준(시간당 고정비 대비 ≥2배) 미달 위기",
-      "월 고정비 약 3,700만원 ÷ 200 운영시간 = 18.5만원/h → 목표 ≥37만원/h",
+      "현재 31.2만 원/h — ToC 기준(시간당 고정비 대비 ≥2배) 미달 위기",
+      "월 고정비 약 3,700만 원 ÷ 200 운영시간 = 18.5만 원/h → 목표 ≥37만 원/h",
       "체어 가동률·케이스 믹스 개선 시 시간당 생산성 자동 향상 연동",
     ],
     solution: [
@@ -384,7 +384,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
       "③ 이번 달: 30분 단위 생산성 분석 → 저생산 시간대 원인 파악",
     ],
     effect: [
-      "케이스 믹스 개선 시 37만원/h 목표 달성 가능",
+      "케이스 믹스 개선 시 37만 원/h 목표 달성 가능",
       "고정비 대비 2배 달성 시 월 추가 순이익 약 300만 원",
       "ToC 병목 해소 = 고정비 레버리지 최대화",
     ],
@@ -521,7 +521,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   bepDay: {
     analysis: [
-      "현재 BEP 약 20일 — 월 고정비 5,200만원 ÷ 일평균 매출 262만원",
+      "현재 BEP 약 20일 — 월 고정비 5,200만 원 ÷ 일평균 매출 262만 원",
       "월 20일에 BEP = 이후 10일이 순수 이익 창출 기간",
       "노쇼·당일 취소 해결 시 BEP 15일대까지 단축 가능",
       "(이번 달 매출로 병원의 모든 고정비(임대·인건비·재료비 등)를 커버하는 데 약 20일이 걸려요. 즉 매달 21일째부터 30일까지 남은 10일이 원장님 순이익으로 쌓이는 기간입니다. 노쇼·당일 취소만 잡아도 이 BEP 시점을 15일 근처로 당길 수 있어서, 순이익 기간이 10일에서 15일로 늘어납니다.)",
@@ -540,7 +540,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   monthlyRevenue: {
     analysis: [
-      "현재 7,850만원 — 연차 3년·체어 6대 기준 대비 추세 확인 필요",
+      "현재 7,850만 원 — 연차 3년·체어 6대 기준 대비 추세 확인 필요",
       "REL 판정: 절대값 목표 강요 폐기 — 개원 연차·규모 대비 추세 판정",
       "주요 상류 지표: 체어 가동률·예약 충족률·당일 취소율이 직접 연결",
     ],
@@ -561,7 +561,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   patientLtv: {
     analysis: [
-      "현재 141만원 (= 38.5만 객단가 × 2.4회/년 × 61% 리콜 × 2.5년 유지)",
+      "현재 141만 원 (= 38.5만 객단가 × 2.4회/년 × 61% 리콜 × 2.5년 유지)",
       "결과 지표: 단독 목표 추구 말고 원인 지표 3개를 먼저 해결",
       "리콜 성공률·재내원율·진료 완료율이 LTV의 직접 상류 원인",
     ],
@@ -646,7 +646,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   staffProductivity: {
     analysis: [
-      "현재 981만원/인 — 8명 기준, 의원 규모 대비 추세 확인",
+      "현재 981만 원/인 — 8명 기준, 의원 규모 대비 추세 확인",
       "인당 매출 981만 원 = 월 매출 7,850만 원 ÷ 8명 스태프",
       "스태프 이직률 19% 경고 → 핵심 인력 이탈 시 생산성 즉시 하락",
     ],
@@ -692,16 +692,16 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
     analysis: [
       "현재 0.48x — 인건비 1원당 순이익 48원 창출 (안정기 목표 ≥ 1.0x 대비 절반)",
       "인건비 비율 자체(35.4%)는 경고 수준이지만 순이익 창출 배수는 더 심각",
-      "원인: 순이익률 하락(17.0%, 5%p↓) + 인건비 초과분 380만원 동반 발생",
+      "원인: 순이익률 하락(17.0%, 5%p↓) + 인건비 초과분 380만 원 동반 발생",
       "(스태프에게 인건비 100원 나갈 때 순이익은 48원만 남아요. 안정된 병원은 인건비만큼 순이익이 남아야(1.0배) 스태프 1명을 추가 채용해도 병원이 손해 안 봅니다. 지금 절반 수준이라 확장·채용은 이른 시점이에요. 원인은 인건비 자체보다 순이익률이 3개월째 하락 중이라는 점이라, 리콜·재내원 회복이 배수 개선의 핵심입니다.)",
     ],
     solution: [
-      "① 오늘: 인건비 초과분 380만원 원인 = 목요일 오후 초과근무 3건 즉시 재배정",
+      "① 오늘: 인건비 초과분 380만 원 원인 = 목요일 오후 초과근무 3건 즉시 재배정",
       "② 이번 주: 리콜/예방 매출 축 강화로 순이익률 회복 (인건비 조정 없이 배수 개선)",
       "③ 다음 달: 배수 0.6x 목표 (인건비 유지 + 순이익 300만 회복)",
     ],
     effect: [
-      "배수 0.6x 달성 시 인당 순이익 250만원 회복",
+      "배수 0.6x 달성 시 인당 순이익 250만 원 회복",
       "배수 1.0x = 안정기 진입 · 스태프 1인 추가 채용 시 순이익 방어 가능",
       "장기: 배수 1.5x 이상 = 확장 투자·분원 검토 근거",
     ],
@@ -712,10 +712,10 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   perStaffProfit: {
     analysis: [
-      "이번 달 인당 순이익 167만원 (스태프 8명 기준)",
-      "안정기 병원 벤치마크(월 200만원/인) 대비 -33만원 · 3개월 연속 하락",
+      "이번 달 인당 순이익 167만 원 (스태프 8명 기준)",
+      "안정기 병원 벤치마크(월 200만 원/인) 대비 -33만 원 · 3개월 연속 하락",
       "체어 6대 · 스태프 8명 구조에서 신규 채용 여력 없음 — 생산성 개선이 유일 지렛대",
-      "(스태프 8명 각자가 이번 달에 원장님 통장에 들어올 순이익을 167만원씩 만든 셈이에요. 다른 안정된 병원은 인당 200만원을 목표로 하는데, 지금 33만원 부족합니다. 이 숫자가 3개월째 떨어지고 있어서, 스태프를 더 뽑기 전에 지금 팀의 생산성을 먼저 회복해야 해요. 체어 회전을 높이고 환자 대기시간을 줄이면 인건비 그대로 놔둔 채 인당 순이익만 끌어올릴 수 있습니다.)",
+      "(스태프 8명 각자가 이번 달에 원장님 통장에 들어올 순이익을 167만 원씩 만든 셈이에요. 다른 안정된 병원은 인당 200만 원을 목표로 하는데, 지금 33만 원 부족합니다. 이 숫자가 3개월째 떨어지고 있어서, 스태프를 더 뽑기 전에 지금 팀의 생산성을 먼저 회복해야 해요. 체어 회전을 높이고 환자 대기시간을 줄이면 인건비 그대로 놔둔 채 인당 순이익만 끌어올릴 수 있습니다.)",
     ],
     solution: [
       "① 이번 주: 대기시간 22분 → 12분 단축 (Lean 낭비 제거)",
@@ -723,9 +723,9 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
       "③ 분기: 인당 순이익 200만/인 목표",
     ],
     effect: [
-      "체어 회전 25%p 개선 시 월 순이익 320만 추가 → 인당 순이익 +40만/인 → 약 207만원",
+      "체어 회전 25%p 개선 시 월 순이익 320만 추가 → 인당 순이익 +40만/인 → 약 207만 원",
       "대기시간 단축 시 NPS 동반 상승 → 재내원율 유지",
-      "인당 순이익 250만원/인 = 스태프 1명 추가 채용 손익분기 확보",
+      "인당 순이익 250만 원/인 = 스태프 1명 추가 채용 손익분기 확보",
     ],
     action: "체어 회전율 개선 즉시 시작",
     judgeType: "REL",
@@ -971,9 +971,9 @@ export default function Dashboard() {
     { id: "recallRate",   name: "리콜 성공률",        unit: "%",     current: finance.retention.recallRate,    benchmark: 70,  direction: "higher", benchmarkLabel: "≥ 70%" },
     { id: "preventiveRecall", name: "예방·리콜 매출 비중", unit: "%", current: finance.retention.preventiveRatio, benchmark: 18, direction: "higher", benchmarkLabel: "≥ 18%" },
     { id: "cancelRate",   name: "당일 취소율",        unit: "%",     current: finance.cancelRate.current,      benchmark: 3,   direction: "lower",  benchmarkLabel: "≤ 3%" },
-    { id: "uncollected",  name: "미수금 비율",        unit: "만원",  current: Math.round(finance.uncollected.total / 10_000), benchmark: 0, direction: "lower", benchmarkLabel: `≤ 총 매출의 1.5%` },
+    { id: "uncollected",  name: "미수금 비율",        unit: "만 원",  current: Math.round(finance.uncollected.total / 10_000), benchmark: 0, direction: "lower", benchmarkLabel: `≤ 총 매출의 1.5%` },
     { id: "laborProfitRatio", name: "인건비 대비 순이익 배수", unit: "x", current: finance.laborProfitRatio.current, benchmark: finance.laborProfitRatio.benchmark, direction: "higher", benchmarkLabel: `≥ ${finance.laborProfitRatio.benchmark.toFixed(1)}x` },
-    { id: "perStaffProfit",   name: "인당 창출 순이익",    unit: "만원", current: finance.perStaffProfit.current,  benchmark: finance.perStaffProfit.benchmark, direction: "higher", benchmarkLabel: `≥ ${finance.perStaffProfit.benchmark}만원` },
+    { id: "perStaffProfit",   name: "인당 창출 순이익",    unit: "만 원", current: finance.perStaffProfit.current,  benchmark: finance.perStaffProfit.benchmark, direction: "higher", benchmarkLabel: `≥ ${finance.perStaffProfit.benchmark}만 원` },
     // 기존 3카드 재활용
     { id: "noShow",       name: "노쇼율",             unit: "%",     current: finance.noShowLatest,            benchmark: 4,   direction: "lower",  benchmarkLabel: "≤ 4%" },
     { id: "bepDay",       name: "BEP 달성률",         unit: "%",     current: finance.bep.achievement,         benchmark: 100, direction: "higher", benchmarkLabel: "≥ 100%" },
@@ -1372,8 +1372,8 @@ export default function Dashboard() {
               <Text style={styles.chartCaption}>인건비 자체는 좌측 HR 관제 · 여기는 순이익 창출 관점</Text>
             </View>
 
-            {/* ═══ 섹션 2: 유지 (NRR · Value-Based Care) ═══════ */}
-            <SectionHeader title="유지" framework="NRR · Value-Based Care" score={axisScores.retention} onPressExplain={() => setScoreExplainerOpen(true)} />
+            {/* ═══ 섹션 2: 유지 (유지 경제학 · Value-Based Care) ═══════ */}
+            <SectionHeader title="유지" framework="유지 경제학 · Value-Based Care" score={axisScores.retention} onPressExplain={() => setScoreExplainerOpen(true)} />
             <InsightCard tone="retention" text={finance.retentionInsight} />
 
             <View style={styles.card}>

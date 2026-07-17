@@ -19,7 +19,7 @@ const BAND_COLOR = (rate: number): string => {
 
 function formatKRW(n: number): string {
   if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(1)}억`;
-  if (n >= 10_000) return `${(n / 10_000).toLocaleString(undefined, { maximumFractionDigits: 0 })}만원`;
+  if (n >= 10_000) return `${(n / 10_000).toLocaleString(undefined, { maximumFractionDigits: 0 })}만 원`;
   return `${n.toLocaleString()}원`;
 }
 

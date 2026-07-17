@@ -196,7 +196,7 @@ const SCORE_GUIDE_STEPS: Entry[] = [
     q: "3개 축에는 어떤 지표들이 들어가나요?",
     a:
       "▪ 수익성 (Unit Economics) 7개: 월 매출, 환자 LTV, LTV:CAC, 스태프 생산성, 월 순이익률, 시간당 생산성, 마케팅 ROI\n" +
-      "▪ 유지 (NRR · Value-Based Care) 5개: 재내원율, 리콜 성공률, 진료 완료율, 환자 NPS, 예방·리콜 매출 비중\n" +
+      "▪ 유지 (유지 경제학·NRR · Value-Based Care) 5개: 재내원율, 리콜 성공률, 진료 완료율, 환자 NPS, 예방·리콜 매출 비중\n" +
       "▪ 리스크·현금 (Lean · 재무 기본) 8개: 체어 가동률, 예약 충족률, 당일 취소율, 미수금 비율, 신환 내원, 스태프 이직률, 재료비 비율, 기공료 비율",
   },
   {
@@ -409,7 +409,7 @@ function HelpScreenInner() {
         <TouchableOpacity
           onPress={() => {
             if (router.canGoBack()) router.back();
-            else router.replace("/settings" as any);
+            else router.replace("/dashboard");
           }}
           style={styles.backBtn}
         >

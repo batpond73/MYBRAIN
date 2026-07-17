@@ -180,7 +180,7 @@ export type FinancePeriodData = {
   cancelRate: CancelRateBlock;
   uncollected: UncollectedBlock;
   laborProfitRatio: LaborCrossBlock;  // 순이익 / 인건비 배수 (≥ 1.0 이상 안정기)
-  perStaffProfit: LaborCrossBlock;    // 스태프 1인당 창출 순이익 (만원)
+  perStaffProfit: LaborCrossBlock;    // 스태프 1인당 창출 순이익 (만 원)
 
   // ── 통합 진단 (mock 텍스트, 스코어는 runtime 계산) ─
   overallVerdict: string;             // 3축 판정 요약 1~2문장
@@ -258,11 +258,11 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
       "리콜 성공률 63%가 현재 경고·위기 상태인 환자 LTV·예방·리콜 매출 비중 2개 지표의 상류. 여기부터 손대면 이 2개가 동시에 회복.\n(정기 검진 안내를 받은 환자 10명 중 6~7명만 예약을 잡고 있어요. 이 숫자 하나가 지금 흔들리는 두 가지 문제(환자 1명이 평생 병원에 낼 돈·정기 진료로 벌어들이는 매출 비중)의 뿌리입니다. 여기만 개선해도 두 가지가 함께 좋아져요.)",
 
     profitabilityInsight:
-      "일 매출 310만 · 순이익률 21.4% · LTV:CAC 3.5x · 인당 순이익 8만원(하루) = 안정기 병원 인당 하루 목표 7만원을 넘긴 상태 — 오늘 페이스 유지가 관건.\n(오늘 매출 310만원에서 66만원(21.4%)이 순이익으로 남았어요. 환자 한 명 유치 비용에 비해 그 환자가 병원에 낼 돈은 3.5배로 정상 구간이고요. 스태프 8명 기준 1인당 오늘 만든 순이익 8만원은 안정된 병원의 하루 목표(7만원, 월 200만원 기준)를 살짝 넘긴 수준입니다. 오늘 이 페이스가 이번 달 내내 유지되어야 월 목표에 다가갈 수 있어요.)",
+      "일 매출 310만 · 순이익률 21.4% · LTV:CAC 3.5x · 인당 순이익 8만 원(하루) = 안정기 병원 인당 하루 목표 7만 원을 넘긴 상태 — 오늘 페이스 유지가 관건.\n(오늘 매출 310만 원에서 66만 원(21.4%)이 순이익으로 남았어요. 환자 한 명 유치 비용에 비해 그 환자가 병원에 낼 돈은 3.5배로 정상 구간이고요. 스태프 8명 기준 1인당 오늘 만든 순이익 8만 원은 안정된 병원의 하루 목표(7만 원, 월 200만 원 기준)를 살짝 넘긴 수준입니다. 오늘 이 페이스가 이번 달 내내 유지되어야 월 목표에 다가갈 수 있어요.)",
     retentionInsight:
       "재내원율 76%(최우수) 대비 리콜 성공률 63%(경고)로 gap 13%p. 예방 매출 비중 7.1%는 위기 임계값(12%) 아래로 절반 수준.\n(치료 마친 환자 10명 중 7~8명이 다시 오는 건 최고 수준이에요. 그런데 정기 검진 안내에 반응하는 비율은 63%뿐이라 재방문 좋은 흐름을 놓치고 있어요. 스케일링·검진 매출도 전체의 7.1%밖에 안 돼서, 정기 진료로 안정적으로 벌 수 있는 금액의 절반도 못 챙기고 있는 상태입니다.)",
     riskInsight:
-      "노쇼 5.0% + 당일 취소 6.7% + 상담 거절 44% + 미수금 99만원. 오늘 매출 누수 추정 42만원 — 리마인드 문자 2건과 미회수 콜 1건으로 즉시 방어 가능.\n(오늘 예약해놓고 안 온 환자 5%, 당일 취소한 환자 6.7%, 상담 후 치료 안 하겠다고 한 환자가 44%, 아직 못 받은 진료비 99만원이 있어요. 이걸 다 합치면 오늘 하루에만 약 42만원이 그냥 새어나갔습니다. 예약 전날 문자 2건과 밀린 진료비 전화 1건만으로 대부분 방어 가능해요.)",
+      "노쇼 5.0% + 당일 취소 6.7% + 상담 거절 44% + 미수금 99만 원. 오늘 매출 누수 추정 42만 원 — 리마인드 문자 2건과 미회수 콜 1건으로 즉시 방어 가능.\n(오늘 예약해놓고 안 온 환자 5%, 당일 취소한 환자 6.7%, 상담 후 치료 안 하겠다고 한 환자가 44%, 아직 못 받은 진료비 99만 원이 있어요. 이걸 다 합치면 오늘 하루에만 약 42만 원이 그냥 새어나갔습니다. 예약 전날 문자 2건과 밀린 진료비 전화 1건만으로 대부분 방어 가능해요.)",
     overallPrescription: {
       analysis: [
         "오늘 하루 3축 스코어 — 수익성 67 / 유지 50 / 리스크 60",
@@ -271,12 +271,12 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
       ],
       solution: [
         "① 오늘 15시 이전: 리콜 도래 환자 5명 전원에 예약 문자 발송",
-        "② 오늘 마감 전: 미수금 99만원 중 90일 초과 4.4만원 전화 회수",
+        "② 오늘 마감 전: 미수금 99만 원 중 90일 초과 4.4만 원 전화 회수",
         "③ 내일 진료 전: 목요일 오후 초과근무 예방 위해 예약 3건 재배정",
       ],
       effect: [
         "리콜 5명 예약 확정 시 재내원율 4주 뒤 76% → 78% 유지",
-        "미수금 회수 콜 1건 = 오늘 확정 매출 4.4만원 방어",
+        "미수금 회수 콜 1건 = 오늘 확정 매출 4.4만 원 방어",
         "초과근무 재배정 = 인건비 초과분 즉시 차단 · 배수 개선",
       ],
       action: "리콜 문자 5건 · 회수 콜 1건 · 예약 재배정 3건 오늘 즉시 실행",
@@ -343,26 +343,26 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
       "리콜 성공률 62%(경고)가 현재 흔들리는 환자 LTV·예방·리콜 매출 비중 2개 지표의 상류. 이번 주 리콜 도래 환자 38명에 예약 문자 발송 시 3~4주 뒤 이 2개 지표 동시 회복.\n(이번 주에 정기 검진 예약 안내를 받은 환자 38명 중 62%만 예약을 잡고 있어요. 이 사람들 전원에게 예약 문자를 다시 보내면, 3~4주 뒤부터 환자 1명이 평생 낼 돈·정기 진료 매출 두 가지가 함께 좋아집니다.)",
 
     profitabilityInsight:
-      "주 매출 1,860만 · 순이익률 19.2% · LTV:CAC 3.6x = Unit Economics 정상 구간 유지 중. 인건비 대비 순이익 배수 0.53x — 안정기 목표(1.0x)의 절반이라 확장 투자는 아직 이름.\n(이번 주 매출 1,860만원 중 순이익이 357만원(19.2%) 남았고, 환자 유치 비용 대비 그 환자가 낼 돈은 3.6배로 좋은 구조예요. 다만 인건비 1원당 순이익이 53원 수준이라 아직 인건비만큼도 순이익을 못 만들고 있어서, 지금 확장·투자 결정은 이르고 순이익률부터 회복해야 합니다.)",
+      "주 매출 1,860만 · 순이익률 19.2% · LTV:CAC 3.6x = Unit Economics 정상 구간 유지 중. 인건비 대비 순이익 배수 0.53x — 안정기 목표(1.0x)의 절반이라 확장 투자는 아직 이름.\n(이번 주 매출 1,860만 원 중 순이익이 357만 원(19.2%) 남았고, 환자 유치 비용 대비 그 환자가 낼 돈은 3.6배로 좋은 구조예요. 다만 인건비 1원당 순이익이 53원 수준이라 아직 인건비만큼도 순이익을 못 만들고 있어서, 지금 확장·투자 결정은 이르고 순이익률부터 회복해야 합니다.)",
     retentionInsight:
       "재내원율 75% 대비 리콜 성공률 62% gap 13%p로 재내원 파이프에서 새는 중. 예방 매출 6.5%는 위기 임계값(12%) 아래 — NRR 축 균열 신호.\n(치료 끝난 환자 10명 중 7~8명이 다시 오는 건 좋은데, 정기 검진 안내에 반응하는 건 6명뿐이에요. 즉 다시 올 준비된 환자들 중 상당수를 놓치고 있는 셈입니다. 스케일링·검진 매출도 전체 매출의 6.5%로 위기 구간이라, 안정적으로 매달 벌 수 있는 파이프가 마르는 신호예요.)",
     riskInsight:
-      "노쇼 7.4% + 당일 취소 7.5% + 상담 거절 46% + 미수금 624만원. 이번 주 매출 누수 추정 145만원 — 리마인드 자동화·분납 옵션·회수 콜로 이 중 90만원 방어 가능.\n(이번 주에 예약 안 나온 환자 7.4%, 당일 취소 7.5%, 상담 후 치료 안 하겠다고 한 환자가 46%, 아직 못 받은 진료비 624만원이 있어요. 이걸 합치면 이번 주 매출에서 약 145만원이 그냥 새어나갔습니다. 예약 자동 문자·치료비 나눠 내기 안내·미수금 회수 전화 세 가지만 시작해도 90만원은 바로 지킬 수 있어요.)",
+      "노쇼 7.4% + 당일 취소 7.5% + 상담 거절 46% + 미수금 624만 원. 이번 주 매출 누수 추정 145만 원 — 리마인드 자동화·분납 옵션·회수 콜로 이 중 90만 원 방어 가능.\n(이번 주에 예약 안 나온 환자 7.4%, 당일 취소 7.5%, 상담 후 치료 안 하겠다고 한 환자가 46%, 아직 못 받은 진료비 624만 원이 있어요. 이걸 합치면 이번 주 매출에서 약 145만 원이 그냥 새어나갔습니다. 예약 자동 문자·치료비 나눠 내기 안내·미수금 회수 전화 세 가지만 시작해도 90만 원은 바로 지킬 수 있어요.)",
     overallPrescription: {
       analysis: [
         "이번 주 3축 스코어 — 수익성 58 / 유지 45 / 리스크 55",
         "리콜 성공률 62%(경고) 방치 시 4주 뒤 재내원율 75% → 68% 하락 예상",
-        "이번 주 매출 누수 145만원 확정 · 다음 주 그대로면 누수 200만원 초과",
+        "이번 주 매출 누수 145만 원 확정 · 다음 주 그대로면 누수 200만 원 초과",
       ],
       solution: [
         "① 오늘: 리콜 도래 환자 38명에 자동 예약 문자 발송 (Tsheet or SMS)",
         "② 이번 주 안: 상담 거절 사례 51건 중 '비용 부담' 26건에 분납 옵션 재제안",
-        "③ 이번 주 안: 미수금 60일+ 117만원 순차 회수 콜 (하루 5건 x 4일)",
+        "③ 이번 주 안: 미수금 60일+ 117만 원 순차 회수 콜 (하루 5건 x 4일)",
       ],
       effect: [
         "리콜 문자 발송 → 3~4주 뒤 재내원율 유지 · 환자 LTV 방어",
-        "분납 재제안 20% 성공 시 이번 주 잠재 매출 130만원 회수",
-        "미수금 90만원 회수 = 이번 주 매출 누수의 60% 방어",
+        "분납 재제안 20% 성공 시 이번 주 잠재 매출 130만 원 회수",
+        "미수금 90만 원 회수 = 이번 주 매출 누수의 60% 방어",
       ],
       action: "리콜 문자 자동 · 분납 재제안 · 회수 콜 병렬 시작",
     },
@@ -426,26 +426,26 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
       "리콜 성공률 61%(경고)가 현재 흔들리는 환자 LTV·예방·리콜 매출 비중 2개 지표의 상류. 스케일링 리콜 캠페인 4주 집행 시 이 2개 지표 동시 회복 예상.\n(정기 검진 안내를 받은 환자 10명 중 6명만 예약을 잡고 있는데, 이 숫자 하나가 지금 흔들리는 두 가지(환자 1명이 평생 낼 돈·정기 진료로 벌어들이는 매출 비중)의 뿌리예요. 스케일링·검진 안내 문자 캠페인을 4주만 돌려도 이 두 가지가 한꺼번에 좋아집니다.)",
 
     profitabilityInsight:
-      "월 매출 7,850만 · 순이익률 17.0%(연차 대비 -5%p) · LTV:CAC 3.7x · BEP 약 20일. Unit Economics 정상이나 순이익률 하락 추세 — 리콜/재내원 회복 없으면 다음 분기 15%대까지 후퇴 우려.\n(이번 달 매출 7,850만원 중 순이익이 1,335만원(17.0%) 남았어요. 안정된 병원 목표는 22%인데 5%p 낮은 상태이고, 3개월 연속 떨어지는 중입니다. 다행히 환자 유치 비용 대비 그 환자가 낼 돈은 3.7배로 좋은 구조이지만, 월 20일이 되어서야 그달 모든 비용을 커버해서 남은 10일만 순수 이익 구간이에요. 재방문·리콜 회복 없으면 다음 분기 순이익률이 15%대까지 밀릴 수 있습니다.)",
+      "월 매출 7,850만 · 순이익률 17.0%(연차 대비 -5%p) · LTV:CAC 3.7x · BEP 약 20일. Unit Economics 정상이나 순이익률 하락 추세 — 리콜/재내원 회복 없으면 다음 분기 15%대까지 후퇴 우려.\n(이번 달 매출 7,850만 원 중 순이익이 1,335만 원(17.0%) 남았어요. 안정된 병원 목표는 22%인데 5%p 낮은 상태이고, 3개월 연속 떨어지는 중입니다. 다행히 환자 유치 비용 대비 그 환자가 낼 돈은 3.7배로 좋은 구조이지만, 월 20일이 되어서야 그달 모든 비용을 커버해서 남은 10일만 순수 이익 구간이에요. 재방문·리콜 회복 없으면 다음 분기 순이익률이 15%대까지 밀릴 수 있습니다.)",
     retentionInsight:
       "재내원율 74%(최우수) 지지대 위에 리콜 성공률 61%·예방 매출 6.2%(위기) 두 축 흔들림. NRR 관점에서는 기존 환자의 재구매 파이프가 4주 안에 멈출 리스크.\n(치료 마친 환자 10명 중 7~8명이 다시 오는 건 최고 수준인데, 정기 검진 안내에 반응하는 비율은 61%뿐이고 스케일링·검진 매출도 전체의 6.2%밖에 안 됩니다. 즉 지금 재방문 흐름이 좋아도 4주 안에 새로운 흐름이 안 만들어지면 파이프가 마르기 시작해요. 기존 환자에게 정기 검진 안내를 훨씬 더 자주 보내는 게 급합니다.)",
     riskInsight:
-      "노쇼 8.7% + 당일 취소 8.7% + 상담 거절 48% + 미수금 3,689만원. 이번 달 매출 누수 720만원 확정 — 리마인드 자동화 + 분납 옵션 + 회수 콜 세 액션으로 480만원 즉시 방어.\n(이번 달 예약해놓고 안 온 환자 8.7%, 당일 취소도 8.7%, 상담 후 치료 안 하겠다고 한 환자가 48%, 아직 못 받은 진료비가 3,689만원 있어요. 이걸 다 합치면 이번 달에만 720만원이 그냥 새어나갔습니다. 예약 전날 자동 문자·치료비 나눠 내기 안내·미수금 회수 전화 세 가지만 시작해도 이 중 480만원은 바로 지킬 수 있어요.)",
+      "노쇼 8.7% + 당일 취소 8.7% + 상담 거절 48% + 미수금 3,689만 원. 이번 달 매출 누수 720만 원 확정 — 리마인드 자동화 + 분납 옵션 + 회수 콜 세 액션으로 480만 원 즉시 방어.\n(이번 달 예약해놓고 안 온 환자 8.7%, 당일 취소도 8.7%, 상담 후 치료 안 하겠다고 한 환자가 48%, 아직 못 받은 진료비가 3,689만 원 있어요. 이걸 다 합치면 이번 달에만 720만 원이 그냥 새어나갔습니다. 예약 전날 자동 문자·치료비 나눠 내기 안내·미수금 회수 전화 세 가지만 시작해도 이 중 480만 원은 바로 지킬 수 있어요.)",
     overallPrescription: {
       analysis: [
         "이번 달 3축 스코어 — 수익성 58 / 유지 45 / 리스크 55 (유지·리스크 경고 진입)",
         "리콜 성공률 61% 원인으로 재내원율·환자 LTV·예방매출·순이익률·마케팅ROI 5개 동시 하락",
-        "이번 달 매출 누수 720만원 확정 · 방치 시 다음 달 순이익률 15%대 후퇴",
+        "이번 달 매출 누수 720만 원 확정 · 방치 시 다음 달 순이익률 15%대 후퇴",
       ],
       solution: [
         "① 이번 주: 스케일링 리콜 캠페인 시작 (도래 환자 전원 자동 예약 문자)",
         "② 이번 달 안: 상담 거절 48% 중 '비용 부담' 42% 대상 분납 옵션 표준 도입",
-        "③ 이번 달 안: 미수금 60~90일 589만원 순차 회수 (하루 5건 · 4주)",
+        "③ 이번 달 안: 미수금 60~90일 589만 원 순차 회수 (하루 5건 · 4주)",
       ],
       effect: [
         "리콜 성공률 61% → 70% 회복 → 재내원율 78%·환자 LTV 165만·예방매출 8%p 상승",
-        "분납 도입 20% 성공 = 이번 달 잠재 매출 420만원 회수 · 상담 동의율 62%로 회복",
-        "미수금 회수 480만원 = 이번 달 매출 누수의 67% 방어",
+        "분납 도입 20% 성공 = 이번 달 잠재 매출 420만 원 회수 · 상담 동의율 62%로 회복",
+        "미수금 회수 480만 원 = 이번 달 매출 누수의 67% 방어",
       ],
       action: "리콜 캠페인 · 분납 표준화 · 회수 콜 3면 동시 실행",
     },
@@ -505,11 +505,11 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
       "리콜 성공률 58%(위기 진입)가 환자 LTV·예방·리콜 매출 비중 2개 지표를 동시에 끌어내리는 중. 분기 리콜 파이프라인 재설계 없이는 다음 분기 LTV·예방 매출 추가 하락 확실.\n(정기 검진 안내를 받은 환자 10명 중 5.8명만 예약을 잡고 있는데, 이 숫자 하나가 환자 1명이 평생 낼 돈과 정기 진료로 벌어들이는 매출 두 가지를 동시에 끌어내리고 있어요. 분기 단위로 정기 검진 안내 방식(문자 시점·문구·담당자 지정)을 다시 짜지 않으면 다음 분기 이 두 지표가 확정적으로 더 떨어집니다.)",
 
     profitabilityInsight:
-      "분기 매출 2억 1,850만 · 순이익률 16.3%(3개월 연속 하락) · LTV:CAC 3.9x. 인당 분기 순이익 445만원은 안정기 벤치마크(월 200만원 × 3 = 600만원) 대비 74% 수준 — 유지 축 개선이 다음 분기 수익성 유지의 유일한 지렛대.\n(분기 매출 2억 1,850만원 중 순이익이 16.3%로 남았는데, 3개월 연속 떨어지고 있어요. 환자 유치 비용 대비 그 환자가 낼 돈은 3.9배로 여전히 좋은 구조이고, 스태프 8명 기준 1인당 분기 순이익 445만원은 안정된 병원 목표(월 200만 × 3개월 = 600만)에 아직 못 미치는 상태입니다. 지금 구조는 좋지만 뒷심이 약해지고 있어서, 다시 오는 환자·정기 검진 파이프를 회복하는 것 외에는 순이익률을 되돌릴 방법이 없어요.)",
+      "분기 매출 2억 1,850만 · 순이익률 16.3%(3개월 연속 하락) · LTV:CAC 3.9x. 인당 분기 순이익 445만 원은 안정기 벤치마크(월 200만 원 × 3 = 600만 원) 대비 74% 수준 — 유지 축 개선이 다음 분기 수익성 유지의 유일한 지렛대.\n(분기 매출 2억 1,850만 원 중 순이익이 16.3%로 남았는데, 3개월 연속 떨어지고 있어요. 환자 유치 비용 대비 그 환자가 낼 돈은 3.9배로 여전히 좋은 구조이고, 스태프 8명 기준 1인당 분기 순이익 445만 원은 안정된 병원 목표(월 200만 × 3개월 = 600만)에 아직 못 미치는 상태입니다. 지금 구조는 좋지만 뒷심이 약해지고 있어서, 다시 오는 환자·정기 검진 파이프를 회복하는 것 외에는 순이익률을 되돌릴 방법이 없어요.)",
     retentionInsight:
       "재내원율 72%·리콜 성공률 58%(위기)·예방 매출 5.9%(위기) — NRR 3지표 중 2개가 위기. 신환 유치보다 5배 저비용인 유지 파이프가 무너지는 중이라 분기 재설계 시급.\n(치료 마친 환자 재방문율 72%, 정기 검진 예약 성공률 58%, 스케일링·검진 매출 비중 5.9%예요. 환자 유지 관련 3가지 지표 중 2가지가 이미 위기 구간이라, 새 환자를 광고로 데려오는 것보다 5배 저렴한 '기존 환자 유지' 파이프가 무너지는 중입니다. 분기 안에 정기 검진 안내 시스템 자체를 다시 설계해야 해요.)",
     riskInsight:
-      "노쇼 6.7%(개선) + 당일 취소 7.8% + 상담 거절 49% + 미수금 1억 264만원. 90일 초과 미수금 884만원은 회수 확률 14%로 사실상 손실 확정 — 이번 분기 안에 회수 아니면 대손 처리 검토.\n(이번 분기 예약해놓고 안 온 환자 비율은 6.7%로 조금 좋아졌지만, 당일 취소 7.8%·상담 거절 49%는 여전하고 아직 못 받은 진료비가 무려 1억 264만원 쌓였어요. 그중 90일 넘게 방치된 884만원은 회수 확률이 14%라 사실상 못 받는 돈이 됐습니다. 분기 마감 전에 못 받으면 회계상 '못 받는 돈'으로 정리(대손)해서 재무제표를 깨끗이 하는 걸 검토해야 해요.)",
+      "노쇼 6.7%(개선) + 당일 취소 7.8% + 상담 거절 49% + 미수금 1억 264만 원. 90일 초과 미수금 884만 원은 회수 확률 14%로 사실상 손실 확정 — 이번 분기 안에 회수 아니면 대손 처리 검토.\n(이번 분기 예약해놓고 안 온 환자 비율은 6.7%로 조금 좋아졌지만, 당일 취소 7.8%·상담 거절 49%는 여전하고 아직 못 받은 진료비가 무려 1억 264만 원 쌓였어요. 그중 90일 넘게 방치된 884만 원은 회수 확률이 14%라 사실상 못 받는 돈이 됐습니다. 분기 마감 전에 못 받으면 회계상 '못 받는 돈'으로 정리(대손)해서 재무제표를 깨끗이 하는 걸 검토해야 해요.)",
     overallPrescription: {
       analysis: [
         "이번 분기 3축 스코어 — 수익성 58 / 유지 35 / 리스크 55 (유지 위기 진입)",
@@ -519,7 +519,7 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
       solution: [
         "① 이번 주: 분기 리콜 파이프라인 전면 재설계 (담당 지정 · KPI 주간 리뷰)",
         "② 다음 달: 예방 패키지 상품 정식 도입 (스케일링+X-ray+구강검사 세트)",
-        "③ 분기 안: 90일 초과 미수금 884만원 회수/대손 결단 · 재무 클린업",
+        "③ 분기 안: 90일 초과 미수금 884만 원 회수/대손 결단 · 재무 클린업",
       ],
       effect: [
         "리콜 재설계 시 다음 분기 재내원율 72% → 76% · 순이익률 반등 예상",
@@ -636,14 +636,14 @@ export const KPI_BENCHMARKS = {
   // judgeType: ABS(절대 임계값) · REL(연차/규모 대비 추세) · DERIVED(파생 지표 — 원인 KPI로 안내 우선)
   all20: [
     {
-      id: 1, key: "monthlyRevenue", name: "월 매출", unit: "만원",
-      benchmark: "연차·체어수 대비 추세", current: "7,850만원", status: "normal" as const,
+      id: 1, key: "monthlyRevenue", name: "월 매출", unit: "만 원",
+      benchmark: "연차·체어수 대비 추세", current: "7,850만 원", status: "normal" as const,
       judgeType: "REL" as const, relBasis: "tenure" as const, isResultMetric: false,
       upstreamKpiKeys: ["chairUtil", "appointmentRate", "cancelRate"],
     },
     {
-      id: 2, key: "patientLtv", name: "환자 LTV", unit: "만원",
-      benchmark: "추세 판정 (DERIVED)", current: "141만원", status: "warning" as const,
+      id: 2, key: "patientLtv", name: "환자 LTV", unit: "만 원",
+      benchmark: "추세 판정 (DERIVED)", current: "141만 원", status: "warning" as const,
       judgeType: "DERIVED" as const, isResultMetric: true,
       upstreamKpiKeys: ["returnRate", "recallRate", "treatComplete"],
       formula: "객단가 × 연 내원수 × 유지연수",
@@ -703,8 +703,8 @@ export const KPI_BENCHMARKS = {
       judgeType: "REL" as const, isResultMetric: false,
     },
     {
-      id: 13, key: "staffProductivity", name: "스태프 생산성", unit: "만원/인",
-      benchmark: "인당 매출, 의원 규모 대비", current: "981만원/인", status: "normal" as const,
+      id: 13, key: "staffProductivity", name: "스태프 생산성", unit: "만 원/인",
+      benchmark: "인당 매출, 의원 규모 대비", current: "981만 원/인", status: "normal" as const,
       judgeType: "REL" as const, relBasis: "staff" as const, isResultMetric: false,
     },
     {
@@ -723,8 +723,8 @@ export const KPI_BENCHMARKS = {
       judgeType: "REL" as const, relBasis: "tenure" as const, isResultMetric: false,
     },
     {
-      id: 17, key: "hourlyProd", name: "시간당 생산성", unit: "만원/h",
-      benchmark: "시간당 생산성 ÷ 시간당 고정비 ≥ 2배", current: "31.2만원/h", status: "crisis" as const,
+      id: 17, key: "hourlyProd", name: "시간당 생산성", unit: "만 원/h",
+      benchmark: "시간당 생산성 ÷ 시간당 고정비 ≥ 2배", current: "31.2만 원/h", status: "crisis" as const,
       judgeType: "REL" as const, isResultMetric: false,
     },
     {
@@ -799,8 +799,8 @@ export const KPI_TOP3_BY_PERIOD: Record<PeriodKey, KpiTop3Snapshot[]> = {
 // 진료 완료율 today=normal, 나머지=warning).
 export const KPI_ALL20_BY_PERIOD: Record<PeriodKey, Kpi20Snapshot[]> = {
   today: [
-    { id: 1,  current: "310만원",       status: "normal" },
-    { id: 2,  current: "138만원",       status: "warning" },
+    { id: 1,  current: "310만 원",       status: "normal" },
+    { id: 2,  current: "138만 원",       status: "warning" },
     { id: 3,  current: "3.5x",          status: "normal" },
     { id: 4,  current: "82%",           status: "normal" },
     { id: 5,  current: "92%",           status: "warning" },
@@ -811,18 +811,18 @@ export const KPI_ALL20_BY_PERIOD: Record<PeriodKey, Kpi20Snapshot[]> = {
     { id: 10, current: "63%",           status: "warning" },
     { id: 11, current: "78%",           status: "normal" },
     { id: 12, current: "12%",           status: "normal" },
-    { id: 13, current: "39만원/인",     status: "normal" },
+    { id: 13, current: "39만 원/인",     status: "normal" },
     { id: 14, current: "2.5%",          status: "best" },
     { id: 15, current: "1.9%",          status: "best" },
     { id: 16, current: "21.4%",         status: "normal" },
-    { id: 17, current: "34.8만원/h",    status: "crisis" },
+    { id: 17, current: "34.8만 원/h",    status: "crisis" },
     { id: 18, current: "53점 (추세↑)",  status: "warning" },
     { id: 19, current: "570%",          status: "normal" },
     { id: 20, current: "7.1%",          status: "crisis" },
   ],
   week: [
-    { id: 1,  current: "1,860만원",     status: "normal" },
-    { id: 2,  current: "140만원",       status: "warning" },
+    { id: 1,  current: "1,860만 원",     status: "normal" },
+    { id: 2,  current: "140만 원",       status: "warning" },
     { id: 3,  current: "3.6x",          status: "normal" },
     { id: 4,  current: "79%",           status: "normal" },
     { id: 5,  current: "90%",           status: "warning" },
@@ -833,18 +833,18 @@ export const KPI_ALL20_BY_PERIOD: Record<PeriodKey, Kpi20Snapshot[]> = {
     { id: 10, current: "62%",           status: "warning" },
     { id: 11, current: "76%",           status: "warning" },
     { id: 12, current: "12%",           status: "normal" },
-    { id: 13, current: "233만원/인",    status: "normal" },
+    { id: 13, current: "233만 원/인",    status: "normal" },
     { id: 14, current: "2.6%",          status: "best" },
     { id: 15, current: "2.0%",          status: "best" },
     { id: 16, current: "19.2%",         status: "warning" },
-    { id: 17, current: "32.1만원/h",    status: "crisis" },
+    { id: 17, current: "32.1만 원/h",    status: "crisis" },
     { id: 18, current: "52점 (추세↑)",  status: "warning" },
     { id: 19, current: "550%",          status: "normal" },
     { id: 20, current: "6.5%",          status: "crisis" },
   ],
   month: [
-    { id: 1,  current: "7,850만원",     status: "normal" },
-    { id: 2,  current: "141만원",       status: "warning" },
+    { id: 1,  current: "7,850만 원",     status: "normal" },
+    { id: 2,  current: "141만 원",       status: "warning" },
     { id: 3,  current: "3.7x",          status: "normal" },
     { id: 4,  current: "78%",           status: "normal" },
     { id: 5,  current: "88%",           status: "warning" },
@@ -855,18 +855,18 @@ export const KPI_ALL20_BY_PERIOD: Record<PeriodKey, Kpi20Snapshot[]> = {
     { id: 10, current: "61%",           status: "warning" },
     { id: 11, current: "74%",           status: "warning" },
     { id: 12, current: "12%",           status: "normal" },
-    { id: 13, current: "981만원/인",    status: "normal" },
+    { id: 13, current: "981만 원/인",    status: "normal" },
     { id: 14, current: "2.7%",          status: "best" },
     { id: 15, current: "2.1%",          status: "best" },
     { id: 16, current: "17.0%",         status: "warning" },
-    { id: 17, current: "31.2만원/h",    status: "crisis" },
+    { id: 17, current: "31.2만 원/h",    status: "crisis" },
     { id: 18, current: "51점 (추세↑)",  status: "warning" },
     { id: 19, current: "540%",          status: "normal" },
     { id: 20, current: "6.2%",          status: "crisis" },
   ],
   quarter: [
-    { id: 1,  current: "2억 1,850만원", status: "normal" },
-    { id: 2,  current: "143만원",       status: "warning" },
+    { id: 1,  current: "2억 1,850만 원", status: "normal" },
+    { id: 2,  current: "143만 원",       status: "warning" },
     { id: 3,  current: "3.9x",          status: "normal" },
     { id: 4,  current: "76%",           status: "normal" },
     { id: 5,  current: "87%",           status: "warning" },
@@ -877,11 +877,11 @@ export const KPI_ALL20_BY_PERIOD: Record<PeriodKey, Kpi20Snapshot[]> = {
     { id: 10, current: "58%",           status: "crisis" },
     { id: 11, current: "73%",           status: "warning" },
     { id: 12, current: "12%",           status: "normal" },
-    { id: 13, current: "2,731만원/인",  status: "normal" },
+    { id: 13, current: "2,731만 원/인",  status: "normal" },
     { id: 14, current: "2.8%",          status: "best" },
     { id: 15, current: "2.3%",          status: "best" },
     { id: 16, current: "16.3%",         status: "warning" },
-    { id: 17, current: "29.5만원/h",    status: "crisis" },
+    { id: 17, current: "29.5만 원/h",    status: "crisis" },
     { id: 18, current: "49점 (추세↑)",  status: "warning" },
     { id: 19, current: "520%",          status: "normal" },
     { id: 20, current: "5.9%",          status: "crisis" },

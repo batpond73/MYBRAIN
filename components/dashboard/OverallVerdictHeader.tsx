@@ -42,7 +42,7 @@ export function OverallVerdictHeader({
       {/* 3축 스코어 배지 (탭 → 설명 모달) */}
       <View style={styles.axisRow}>
         <AxisScoreBadge label="수익성" score={scores.profitability} band={bandOf(scores.profitability)} framework="Unit Economics" onPressExplain={onPressExplainScore} />
-        <AxisScoreBadge label="유지"   score={scores.retention}     band={bandOf(scores.retention)}     framework="NRR·VBC"        onPressExplain={onPressExplainScore} />
+        <AxisScoreBadge label="유지"   score={scores.retention}     band={bandOf(scores.retention)}     framework="유지 경제학·VBC" onPressExplain={onPressExplainScore} />
         <AxisScoreBadge label="리스크" score={scores.risk}          band={bandOf(scores.risk)}          framework="Lean·재무"      onPressExplain={onPressExplainScore} />
       </View>
       {onPressExplainScore && (

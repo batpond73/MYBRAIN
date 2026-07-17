@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Circle, Text as SvgText } from "react-native-svg";
 
 // 재내원율·리콜 성공률·예방 매출 비중 3게이지를 병렬 배치.
-// NRR·Value-Based Care 축의 통합 뷰.
+// 유지 경제학·Value-Based Care 축의 통합 뷰.
 // 각 게이지 탭 → onPressKey(key)로 처방 modal 오픈.
 type Row = {
   key: "returnRate" | "recallRate" | "preventiveRecall";

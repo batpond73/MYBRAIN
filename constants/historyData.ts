@@ -52,7 +52,7 @@ export const KPI_HISTORY: KpiHistoryData[] = [
     entries: [
       { month: "25.12", value: 9.2, status: "crisis" },
       { month: "26.01", value: 8.4, status: "crisis",  action: "취소 문자 알림 강화·2일 전 리마인드 콜", result: "improved" },
-      { month: "26.02", value: 6.1, status: "crisis",  action: "노쇼 위약금 정책 도입(1만원)",          result: "improved" },
+      { month: "26.02", value: 6.1, status: "crisis",  action: "노쇼 위약금 정책 도입(1만 원)",          result: "improved" },
       { month: "26.03", value: 4.3, status: "warning", action: "예약 확인 자동화 시스템 연동",          result: "improved" },
       { month: "26.04", value: 3.8, status: "warning",                                                   result: "improved" },
       { month: "26.05", value: 2.7, status: "normal",                                                    result: "improved" },
@@ -194,7 +194,7 @@ export const KPI_HISTORY: KpiHistoryData[] = [
   {
     key: "hourlyProd",
     name: "시간당 생산성",
-    unit: "만원/h",
+    unit: "만 원/h",
     benchmark: "시간당 생산성 ÷ 시간당 고정비 ≥ 2배",
     benchmarkDesc: "ToC / Operations (REL)",
     judgeType: "REL",
@@ -359,7 +359,7 @@ export const KPI_HISTORY: KpiHistoryData[] = [
   {
     key: "monthlyRevenue",
     name: "월 매출",
-    unit: "만원",
+    unit: "만 원",
     benchmark: "연차·체어수 대비 추세",
     benchmarkDesc: "Unit Economics (REL · 연차 보정)",
     judgeType: "REL",
@@ -378,7 +378,7 @@ export const KPI_HISTORY: KpiHistoryData[] = [
   {
     key: "patientLtv",
     name: "환자 LTV",
-    unit: "만원",
+    unit: "만 원",
     benchmark: "추세 판정 (DERIVED)",
     benchmarkDesc: "Unit Economics (DERIVED · 결과 지표)",
     judgeType: "DERIVED",
@@ -415,7 +415,7 @@ export const KPI_HISTORY: KpiHistoryData[] = [
   {
     key: "staffProductivity",
     name: "스태프 생산성",
-    unit: "만원/인",
+    unit: "만 원/인",
     benchmark: "인당 매출, 의원 규모 대비",
     benchmarkDesc: "Operations (REL · 규모 보정)",
     judgeType: "REL",
