@@ -39,33 +39,205 @@ export const EMR_MOCK = {
   ],
 };
 
-export const HR_DATA = {
-  monthlyRevenue: 78500000,
-  monthlySalaryBudget: 24000000,
-  monthlySalaryActual: 27800000,
-  salaryRatio: 35.4,
-  staffList: [
-    { name: "김지영 실장", position: "데스크", consecutiveDays: 6, overtime: true, riskLevel: "warning" as const },
-    { name: "이수진 위생사", position: "위생사", consecutiveDays: 4, overtime: false, riskLevel: "normal" as const },
-    { name: "박민준 코디", position: "상담", consecutiveDays: 3, overtime: false, riskLevel: "normal" as const },
-    { name: "최하늘 위생사", position: "위생사", consecutiveDays: 7, overtime: true, riskLevel: "critical" as const },
-  ],
-  weeklyData: [
-    { week: "1주", revenue: 18200000, salary: 6200000 },
-    { week: "2주", revenue: 21500000, salary: 6800000 },
-    { week: "3주", revenue: 16800000, salary: 7200000 },
-    { week: "4주", revenue: 22000000, salary: 7600000 },
-  ],
+// ── HR 데이터 (period별) ─────────────────────────────────────────
+// 좌측 "스마트 HR 관제" 패널. 인건비 비율·급여 vs 예산·스태프 리스트·
+// 수익-인건비 막대차트. staffList/salaryRatio는 사람 단위라 기간 무관.
+// 절대액(매출·급여)과 시계열 차트 데이터만 period별로 다른 값.
+type StaffRow = { name: string; position: string; consecutiveDays: number; overtime: boolean; riskLevel: "normal" | "warning" | "critical" };
+type PeriodBar = { label: string; revenue: number; salary: number };
+
+export type HrPeriodData = {
+  totalRevenue: number;
+  salaryBudget: number;
+  salaryActual: number;
+  salaryRatio: number;
+  staffList: StaffRow[];
+  bars: PeriodBar[];
+  barsCaption: string;
 };
 
+const HR_STAFF: StaffRow[] = [
+  { name: "김지영 실장", position: "데스크", consecutiveDays: 6, overtime: true, riskLevel: "warning" },
+  { name: "이수진 위생사", position: "위생사", consecutiveDays: 4, overtime: false, riskLevel: "normal" },
+  { name: "박민준 코디", position: "상담", consecutiveDays: 3, overtime: false, riskLevel: "normal" },
+  { name: "최하늘 위생사", position: "위생사", consecutiveDays: 7, overtime: true, riskLevel: "critical" },
+];
+
+export const HR_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarter", HrPeriodData> = {
+  today: {
+    totalRevenue: 3_100_000,
+    salaryBudget: 800_000,
+    salaryActual: 930_000,
+    salaryRatio: 30.0,
+    staffList: HR_STAFF,
+    bars: [
+      { label: "09시", revenue: 420_000, salary: 155_000 },
+      { label: "11시", revenue: 640_000, salary: 155_000 },
+      { label: "13시", revenue: 380_000, salary: 155_000 },
+      { label: "15시", revenue: 810_000, salary: 232_000 },
+      { label: "17시", revenue: 850_000, salary: 233_000 },
+    ],
+    barsCaption: "시간대별 매출 · 인건비",
+  },
+  week: {
+    totalRevenue: 18_600_000,
+    salaryBudget: 6_000_000,
+    salaryActual: 6_720_000,
+    salaryRatio: 36.1,
+    staffList: HR_STAFF,
+    bars: [
+      { label: "월", revenue: 3_400_000, salary: 1_240_000 },
+      { label: "화", revenue: 4_100_000, salary: 1_260_000 },
+      { label: "수", revenue: 2_900_000, salary: 1_360_000 },
+      { label: "목", revenue: 4_600_000, salary: 1_420_000 },
+      { label: "금", revenue: 3_600_000, salary: 1_440_000 },
+    ],
+    barsCaption: "요일별 매출 · 인건비",
+  },
+  month: {
+    totalRevenue: 78_500_000,
+    salaryBudget: 24_000_000,
+    salaryActual: 27_800_000,
+    salaryRatio: 35.4,
+    staffList: HR_STAFF,
+    bars: [
+      { label: "1주", revenue: 18_200_000, salary: 6_200_000 },
+      { label: "2주", revenue: 21_500_000, salary: 6_800_000 },
+      { label: "3주", revenue: 16_800_000, salary: 7_200_000 },
+      { label: "4주", revenue: 22_000_000, salary: 7_600_000 },
+    ],
+    barsCaption: "주차별 매출 · 인건비",
+  },
+  quarter: {
+    totalRevenue: 218_500_000,
+    salaryBudget: 72_000_000,
+    salaryActual: 78_300_000,
+    salaryRatio: 35.8,
+    staffList: HR_STAFF,
+    bars: [
+      { label: "3월", revenue: 69_400_000, salary: 24_100_000 },
+      { label: "4월", revenue: 70_600_000, salary: 26_400_000 },
+      { label: "5월", revenue: 78_500_000, salary: 27_800_000 },
+    ],
+    barsCaption: "월별 매출 · 인건비",
+  },
+};
+
+/** @deprecated Kept for backward compat — new code should use HR_DATA_BY_PERIOD. */
+export const HR_DATA = {
+  monthlyRevenue: HR_DATA_BY_PERIOD.month.totalRevenue,
+  monthlySalaryBudget: HR_DATA_BY_PERIOD.month.salaryBudget,
+  monthlySalaryActual: HR_DATA_BY_PERIOD.month.salaryActual,
+  salaryRatio: HR_DATA_BY_PERIOD.month.salaryRatio,
+  staffList: HR_DATA_BY_PERIOD.month.staffList,
+  weeklyData: HR_DATA_BY_PERIOD.month.bars.map((b) => ({ week: b.label, revenue: b.revenue, salary: b.salary })),
+};
+
+// ── 재무 & 심층 분석 데이터 (period별) ────────────────────────
+// 우측 "재무 & 심층 분석" 패널의 3카드 (노쇼 추이 · 상담 거절 사유 ·
+// BEP 달성률) 각각 period별 mock 세트.
+//
+// 노쇼 추이 x축: today=시간대 / week=요일 / month=주차 / quarter=월
+// 거절 사유는 표본이 커야 유의미하므로 today는 rolling 7일값을 표시
+// (해설 캡션으로 밝힘).
+// BEP: 기간별 목표(고정비 커버) 대비 실제 매출.
+type TrendPoint = { label: string; rate: number };
+type RejectionRow = { reason: string; count: number; percentage: number };
+type BepBlock = { target: number; current: number; achievement: number };
+
+export type FinancePeriodData = {
+  noShowLatest: number;
+  noShowTrend: TrendPoint[];
+  noShowCaption: string;
+  rejectionReasons: RejectionRow[];
+  rejectionSampleCaption: string;
+  bep: BepBlock;
+  bepCaption: string;
+};
+
+export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarter", FinancePeriodData> = {
+  today: {
+    noShowLatest: 5.0,
+    noShowTrend: [
+      { label: "09시", rate: 0 },
+      { label: "11시", rate: 8.3 },
+      { label: "13시", rate: 6.2 },
+      { label: "15시", rate: 5.0 },
+      { label: "17시", rate: 5.0 },
+    ],
+    noShowCaption: "오늘 시간대별 노쇼율",
+    rejectionReasons: [
+      { reason: "비용 부담", count: 22, percentage: 44 },
+      { reason: "타병원 비교", count: 13, percentage: 26 },
+      { reason: "기간 부담", count: 10, percentage: 20 },
+      { reason: "기타", count: 5, percentage: 10 },
+    ],
+    rejectionSampleCaption: "최근 7일 rolling 표본 (당일 표본 부족)",
+    bep: { target: 1_733_000, current: 3_100_000, achievement: 178.9 },
+    bepCaption: "일 고정비 173만 원 대비 오늘 매출",
+  },
+  week: {
+    noShowLatest: 7.4,
+    noShowTrend: [
+      { label: "월", rate: 5.5 },
+      { label: "화", rate: 6.2 },
+      { label: "수", rate: 7.1 },
+      { label: "목", rate: 8.7 },
+      { label: "금", rate: 9.4 },
+    ],
+    noShowCaption: "이번 주 요일별 노쇼율",
+    rejectionReasons: [
+      { reason: "비용 부담", count: 26, percentage: 43 },
+      { reason: "타병원 비교", count: 17, percentage: 28 },
+      { reason: "기간 부담", count: 12, percentage: 20 },
+      { reason: "기타", count: 5, percentage: 9 },
+    ],
+    rejectionSampleCaption: "이번 주 상담 60건 표본",
+    bep: { target: 12_133_000, current: 18_600_000, achievement: 153.3 },
+    bepCaption: "주 고정비 1,213만 원 대비 이번 주 매출",
+  },
+  month: {
+    noShowLatest: 8.7,
+    noShowTrend: [
+      { label: "1주", rate: 5.5 },
+      { label: "2주", rate: 6.8 },
+      { label: "3주", rate: 7.9 },
+      { label: "4주", rate: 8.7 },
+    ],
+    noShowCaption: "이번 달 주차별 노쇼율",
+    rejectionReasons: [
+      { reason: "비용 부담", count: 18, percentage: 42 },
+      { reason: "타병원 비교", count: 12, percentage: 28 },
+      { reason: "기간 부담", count: 8, percentage: 19 },
+      { reason: "기타", count: 5, percentage: 11 },
+    ],
+    rejectionSampleCaption: "이번 달 상담 43건 표본",
+    bep: { target: 52_000_000, current: 78_500_000, achievement: 150.9 },
+    bepCaption: "월 고정비 5,200만 원 대비 이번 달 매출",
+  },
+  quarter: {
+    noShowLatest: 6.7,
+    noShowTrend: [
+      { label: "3월", rate: 5.1 },
+      { label: "4월", rate: 6.3 },
+      { label: "5월", rate: 8.7 },
+    ],
+    noShowCaption: "이번 분기 월별 노쇼율",
+    rejectionReasons: [
+      { reason: "비용 부담", count: 56, percentage: 41 },
+      { reason: "타병원 비교", count: 38, percentage: 28 },
+      { reason: "기간 부담", count: 28, percentage: 21 },
+      { reason: "기타", count: 14, percentage: 10 },
+    ],
+    rejectionSampleCaption: "분기 상담 136건 표본",
+    bep: { target: 156_000_000, current: 218_500_000, achievement: 140.1 },
+    bepCaption: "분기 고정비 1억 5,600만 원 대비 분기 매출",
+  },
+};
+
+/** @deprecated Kept for backward compat — new code should use FINANCE_DATA_BY_PERIOD. */
 export const FINANCE_DATA = {
-  noShowTrend: [
-    { month: "1월", rate: 4.2 },
-    { month: "2월", rate: 3.8 },
-    { month: "3월", rate: 5.1 },
-    { month: "4월", rate: 6.3 },
-    { month: "5월", rate: 8.7 },
-  ],
+  noShowTrend: FINANCE_DATA_BY_PERIOD.month.noShowTrend.map((p) => ({ month: p.label, rate: p.rate })),
   consultFailRate: [
     { month: "1월", rate: 32 },
     { month: "2월", rate: 28 },
@@ -73,13 +245,12 @@ export const FINANCE_DATA = {
     { month: "4월", rate: 42 },
     { month: "5월", rate: 48 },
   ],
-  rejectionReasons: [
-    { reason: "비용 부담", count: 18, percentage: 42 },
-    { reason: "타병원 비교", count: 12, percentage: 28 },
-    { reason: "기간 부담", count: 8, percentage: 19 },
-    { reason: "기타", count: 5, percentage: 11 },
-  ],
-  bep: { monthly: 52000000, current: 78500000, achievement: 150.9 },
+  rejectionReasons: FINANCE_DATA_BY_PERIOD.month.rejectionReasons,
+  bep: {
+    monthly: FINANCE_DATA_BY_PERIOD.month.bep.target,
+    current: FINANCE_DATA_BY_PERIOD.month.bep.current,
+    achievement: FINANCE_DATA_BY_PERIOD.month.bep.achievement,
+  },
 };
 
 export const PRESCRIPTIONS: Record<string, {

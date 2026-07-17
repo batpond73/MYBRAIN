@@ -19,7 +19,15 @@ import Svg, { Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAppContext } from "@/context/AppContext";
-import { FINANCE_DATA, HR_DATA, KPI_BENCHMARKS, PRESCRIPTIONS, VOICE_PARSE_EXAMPLES } from "@/constants/mockData";
+import {
+  FINANCE_DATA_BY_PERIOD,
+  FinancePeriodData,
+  HR_DATA_BY_PERIOD,
+  HrPeriodData,
+  KPI_BENCHMARKS,
+  PRESCRIPTIONS,
+  VOICE_PARSE_EXAMPLES,
+} from "@/constants/mockData";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -756,8 +764,7 @@ function formatKRW(n: number) {
   return `${n.toLocaleString()}원`;
 }
 
-function HRBarChart() {
-  const data = HR_DATA.weeklyData;
+function HRBarChart({ data }: { data: HrPeriodData["bars"] }) {
   const maxVal = Math.max(...data.map((d) => d.revenue));
   const chartW = SCREEN_WIDTH - 80;
   const chartH = 100;
@@ -773,7 +780,7 @@ function HRBarChart() {
           <React.Fragment key={i}>
             <Rect x={x} y={chartH - revH} width={barW} height={revH} fill="#33A6FF66" rx={3} />
             <Rect x={x + barW + 4} y={chartH - salH} width={barW} height={salH} fill="#FFB30099" rx={3} />
-            <SvgText x={x + barW} y={chartH + 16} fontSize={9} fill="#94A3B8" textAnchor="middle">{d.week}</SvgText>
+            <SvgText x={x + barW} y={chartH + 16} fontSize={9} fill="#94A3B8" textAnchor="middle">{d.label}</SvgText>
           </React.Fragment>
         );
       })}
@@ -782,12 +789,11 @@ function HRBarChart() {
   );
 }
 
-function NoShowChart() {
-  const data = FINANCE_DATA.noShowTrend;
+function NoShowChart({ data }: { data: FinancePeriodData["noShowTrend"] }) {
   const chartW = SCREEN_WIDTH - 80;
   const chartH = 80;
-  const maxVal = Math.max(...data.map((d) => d.rate));
-  const points = data.map((d, i) => ({ x: (i / (data.length - 1)) * chartW, y: chartH - (d.rate / maxVal) * chartH }));
+  const maxVal = Math.max(...data.map((d) => d.rate), 1);
+  const points = data.map((d, i) => ({ x: (i / Math.max(data.length - 1, 1)) * chartW, y: chartH - (d.rate / maxVal) * chartH }));
   const pathD = points.reduce((acc, p, i) => (i === 0 ? `M${p.x},${p.y}` : `${acc} L${p.x},${p.y}`), "");
   return (
     <Svg width={chartW} height={chartH + 20}>
@@ -795,7 +801,7 @@ function NoShowChart() {
       {points.map((p, i) => (
         <React.Fragment key={i}>
           <Rect x={p.x - 3} y={p.y - 3} width={6} height={6} rx={3} fill="#FF3B30" />
-          <SvgText x={i * (chartW / (data.length - 1))} y={chartH + 16} fontSize={9} fill="#94A3B8" textAnchor="middle">{data[i].month}</SvgText>
+          <SvgText x={i * (chartW / Math.max(data.length - 1, 1))} y={chartH + 16} fontSize={9} fill="#94A3B8" textAnchor="middle">{data[i].label}</SvgText>
         </React.Fragment>
       ))}
     </Svg>
@@ -855,6 +861,11 @@ export default function Dashboard() {
       router.replace("/intro");
     }
   }, [hasSeenIntro, isAuthenticated]);
+
+  // Period-scoped mock data — swaps in real time when the user taps
+  // 오늘/이번 주/이번 달/분기 in the top filter row.
+  const hr = HR_DATA_BY_PERIOD[period];
+  const finance = FINANCE_DATA_BY_PERIOD[period];
 
   const [activePanel, setActivePanel] = useState(1);
   const [aiLoading, setAiLoading] = useState(false);
@@ -1021,26 +1032,27 @@ export default function Dashboard() {
             <View style={styles.card}>
               <View style={styles.cardRow}>
                 <View>
-                  <Text style={styles.cardLabel}>당월 인건비 집행율</Text>
-                  <Text style={[styles.cardBigNum, { color: HR_DATA.salaryRatio > 30 ? "#FFB300" : "#33A6FF" }]}>{HR_DATA.salaryRatio}%</Text>
+                  <Text style={styles.cardLabel}>{PERIOD_PREFIX[period]} 인건비 집행율</Text>
+                  <Text style={[styles.cardBigNum, { color: hr.salaryRatio > 30 ? "#FFB300" : "#33A6FF" }]}>{hr.salaryRatio}%</Text>
                 </View>
                 <View style={styles.cardRight}>
                   <Text style={styles.cardLabel}>실지출</Text>
-                  <Text style={styles.cardMidNum}>{formatKRW(HR_DATA.monthlySalaryActual)}</Text>
-                  <Text style={styles.cardSubNum}>예산 {formatKRW(HR_DATA.monthlySalaryBudget)}</Text>
+                  <Text style={styles.cardMidNum}>{formatKRW(hr.salaryActual)}</Text>
+                  <Text style={styles.cardSubNum}>예산 {formatKRW(hr.salaryBudget)}</Text>
                 </View>
               </View>
               <View style={styles.barWrap}>
-                <View style={[styles.barFill, { width: `${Math.min(HR_DATA.salaryRatio, 100)}%` as any, backgroundColor: HR_DATA.salaryRatio > 30 ? "#FFB300" : "#33A6FF" }]} />
+                <View style={[styles.barFill, { width: `${Math.min(hr.salaryRatio, 100)}%` as any, backgroundColor: hr.salaryRatio > 30 ? "#FFB300" : "#33A6FF" }]} />
               </View>
               <View style={styles.chartLegend}>
                 <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: "#33A6FF66" }]} /><Text style={styles.legendText}>매출</Text></View>
                 <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: "#FFB30099" }]} /><Text style={styles.legendText}>인건비</Text></View>
               </View>
-              <HRBarChart />
+              <HRBarChart data={hr.bars} />
+              <Text style={styles.chartCaption}>{hr.barsCaption}</Text>
             </View>
             <Text style={styles.sectionTitle}>근태 리스크 알림</Text>
-            {HR_DATA.staffList.map((s, i) => (
+            {hr.staffList.map((s, i) => (
               <View key={i} style={[styles.staffCard, s.riskLevel === "critical" && styles.staffCardCritical, s.riskLevel === "warning" && styles.staffCardWarning]}>
                 <View style={[styles.riskDot, { backgroundColor: s.riskLevel === "critical" ? "#FF3B30" : s.riskLevel === "warning" ? "#FFB300" : "#00C853" }]} />
                 <View style={styles.staffInfo}>
@@ -1149,13 +1161,13 @@ export default function Dashboard() {
                   {/* 매출 · 순수익 카드 */}
                   <View style={styles.revenueRow}>
                     <View style={styles.revenueCard}>
-                      <Text style={styles.revenueLabel}>당월 매출</Text>
-                      <Text style={styles.revenueValue}>{formatKRW(HR_DATA.monthlyRevenue)}</Text>
-                      <Text style={styles.revenueSub}>전월 대비 +3.2%</Text>
+                      <Text style={styles.revenueLabel}>{PERIOD_PREFIX[period]} 매출</Text>
+                      <Text style={styles.revenueValue}>{formatKRW(hr.totalRevenue)}</Text>
+                      <Text style={styles.revenueSub}>전 {PERIOD_PREFIX[period].replace("의", "")} 대비 +3.2%</Text>
                     </View>
                     <View style={[styles.revenueCard, { borderColor: "#00C853" }]}>
                       <Text style={styles.revenueLabel}>순수익</Text>
-                      <Text style={[styles.revenueValue, { color: "#00C853" }]}>{formatKRW(Math.round(HR_DATA.monthlyRevenue * 0.17))}</Text>
+                      <Text style={[styles.revenueValue, { color: "#00C853" }]}>{formatKRW(Math.round(hr.totalRevenue * 0.17))}</Text>
                       <Text style={styles.revenueSub}>순이익률 17.0%</Text>
                     </View>
                   </View>
@@ -1180,12 +1192,13 @@ export default function Dashboard() {
             </View>
             <View style={styles.card}>
               <Text style={styles.cardLabel}>노쇼(No-Show) 추이</Text>
-              <Text style={[styles.cardBigNum, { color: "#FF3B30", fontSize: 24 }]}>{FINANCE_DATA.noShowTrend.at(-1)?.rate}% <Text style={{ color: "#FF3B30", fontSize: 16 }}>↑</Text></Text>
-              <NoShowChart />
+              <Text style={[styles.cardBigNum, { color: "#FF3B30", fontSize: 24 }]}>{finance.noShowLatest}% <Text style={{ color: "#FF3B30", fontSize: 16 }}>↑</Text></Text>
+              <NoShowChart data={finance.noShowTrend} />
+              <Text style={styles.chartCaption}>{finance.noShowCaption}</Text>
             </View>
             <View style={styles.card}>
               <Text style={styles.cardLabel}>상담 거절 사유 분석</Text>
-              {FINANCE_DATA.rejectionReasons.map((r, i) => (
+              {finance.rejectionReasons.map((r, i) => (
                 <View key={i} style={styles.rejectRow}>
                   <Text style={styles.rejectLabel}>{r.reason}</Text>
                   <View style={styles.rejectBar}>
@@ -1194,12 +1207,14 @@ export default function Dashboard() {
                   <Text style={styles.rejectPct}>{r.percentage}%</Text>
                 </View>
               ))}
+              <Text style={styles.chartCaption}>{finance.rejectionSampleCaption}</Text>
             </View>
             <View style={styles.card}>
               <Text style={styles.cardLabel}>BEP 달성률</Text>
-              <Text style={[styles.cardBigNum, { color: "#00C853" }]}>{FINANCE_DATA.bep.achievement}%</Text>
-              <View style={styles.barWrap}><View style={[styles.barFill, { width: `${Math.min(FINANCE_DATA.bep.achievement, 100)}%` as any, backgroundColor: "#00C853" }]} /></View>
-              <Text style={styles.bepText}>목표 {formatKRW(FINANCE_DATA.bep.monthly)} · 현재 {formatKRW(FINANCE_DATA.bep.current)}</Text>
+              <Text style={[styles.cardBigNum, { color: "#00C853" }]}>{finance.bep.achievement}%</Text>
+              <View style={styles.barWrap}><View style={[styles.barFill, { width: `${Math.min(finance.bep.achievement, 100)}%` as any, backgroundColor: "#00C853" }]} /></View>
+              <Text style={styles.bepText}>목표 {formatKRW(finance.bep.target)} · 현재 {formatKRW(finance.bep.current)}</Text>
+              <Text style={styles.chartCaption}>{finance.bepCaption}</Text>
             </View>
           </ScrollView>
         </View>
@@ -1591,6 +1606,7 @@ const styles = StyleSheet.create({
   rejectFill: { height: "100%", borderRadius: 3 },
   rejectPct: { fontSize: 12, color: "#00153D", width: 36, textAlign: "right" },
   bepText: { fontSize: 11, color: "#64748B" },
+  chartCaption: { fontSize: 10, color: "#94A3B8", marginTop: 6, textAlign: "center" as const },
   // Evidence modal
   evidenceModal: { position: "absolute", bottom: 0, left: 0, right: 0, height: "75%", borderTopLeftRadius: 28, borderTopRightRadius: 28, overflow: "hidden", borderWidth: 1, borderColor: "#E8EDF5", shadowColor: "#00153D", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.1, shadowRadius: 16, elevation: 8 },
   evidenceInner: { flex: 1, padding: 20, gap: 14 },
