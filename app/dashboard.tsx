@@ -1312,7 +1312,7 @@ export default function Dashboard() {
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("ltvCac")}>
               <View style={styles.cardHeadRow}>
-                <Text style={styles.cardLabel}>LTV : CAC 비율 <Text style={styles.cardLabelHint}>(한 환자가 평생 낼 돈 ÷ 그 환자 데려오는 비용)</Text></Text>
+                <Text style={styles.cardLabel}>LTV : CAC 비율</Text>
                 <Feather name="chevron-right" size={14} color="#CBD5E1" />
               </View>
               <LtvCacGauge current={finance.ltvCac.current} ltv={finance.ltvCac.ltv} cac={finance.ltvCac.cac} payback={finance.ltvCac.payback} />
@@ -1320,7 +1320,7 @@ export default function Dashboard() {
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("bepDay")}>
               <View style={styles.cardHeadRow}>
-                <Text style={styles.cardLabel}>BEP 달성률 <Text style={styles.cardLabelHint}>(고정비 커버 목표 대비 실제 매출 · 100% 넘으면 순이익 구간)</Text></Text>
+                <Text style={styles.cardLabel}>BEP 달성률</Text>
                 <Feather name="chevron-right" size={14} color="#CBD5E1" />
               </View>
               <Text style={[styles.cardBigNum, { color: "#00C853" }]}>{finance.bep.achievement}%</Text>
@@ -1331,7 +1331,7 @@ export default function Dashboard() {
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("netProfit")}>
               <View style={styles.cardHeadRow}>
-                <Text style={styles.cardLabel}>월 순이익률 추이 <Text style={styles.cardLabelHint}>(매출에서 모든 비용 빼고 남는 비율 · 안정기 20~25% 목표)</Text></Text>
+                <Text style={styles.cardLabel}>월 순이익률 추이</Text>
                 <Feather name="chevron-right" size={14} color="#CBD5E1" />
               </View>
               <Text style={[styles.cardBigNum, { color: finance.netProfit.latest >= finance.netProfit.benchmark ? "#00C853" : "#FFB300", fontSize: 24 }]}>
@@ -1348,7 +1348,7 @@ export default function Dashboard() {
             </TouchableOpacity>
 
             <View style={styles.card}>
-              <Text style={styles.cardLabel}>HR × 재무 크로스 <Text style={styles.cardLabelHint}>(인건비가 실제로 얼마나 순이익을 만들어내는지)</Text></Text>
+              <Text style={styles.cardLabel}>HR × 재무 크로스</Text>
               <LaborCrossCard
                 laborProfitRatio={finance.laborProfitRatio}
                 perStaffProfit={finance.perStaffProfit}
@@ -1363,7 +1363,7 @@ export default function Dashboard() {
             <InsightCard tone="retention" text={finance.retentionInsight} />
 
             <View style={styles.card}>
-              <Text style={styles.cardLabel}>재내원·리콜·예방 트리오 <Text style={styles.cardLabelHint}>(환자를 다시 오게 만드는 3대 지표)</Text></Text>
+              <Text style={styles.cardLabel}>재내원·리콜·예방 트리오</Text>
               <RetentionTrio
                 returnRate={finance.retention.returnRate}
                 recallRate={finance.retention.recallRate}
@@ -1379,7 +1379,7 @@ export default function Dashboard() {
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("noShow")}>
               <View style={styles.cardHeadRow}>
-                <Text style={styles.cardLabel}>노쇼(No-Show) 추이 <Text style={styles.cardLabelHint}>(예약해놓고 연락 없이 안 온 환자 비율 · 4% 이하 목표)</Text></Text>
+                <Text style={styles.cardLabel}>노쇼(No-Show) 추이</Text>
                 <Feather name="chevron-right" size={14} color="#CBD5E1" />
               </View>
               <Text style={[styles.cardBigNum, { color: "#FF3B30", fontSize: 24 }]}>{finance.noShowLatest}% <Text style={{ color: "#FF3B30", fontSize: 16 }}>↑</Text></Text>
@@ -1389,7 +1389,7 @@ export default function Dashboard() {
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("cancelRate")}>
               <View style={styles.cardHeadRow}>
-                <Text style={styles.cardLabel}>당일 취소율 추이 <Text style={styles.cardLabelHint}>(예약 당일에 취소한 비율 · 리마인드 문자로 개선 가능)</Text></Text>
+                <Text style={styles.cardLabel}>당일 취소율 추이</Text>
                 <Feather name="chevron-right" size={14} color="#CBD5E1" />
               </View>
               <Text style={[styles.cardBigNum, { color: "#FF3B30", fontSize: 24 }]}>{finance.cancelRate.current}%</Text>
@@ -1404,7 +1404,7 @@ export default function Dashboard() {
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("caseAcceptance")}>
               <View style={styles.cardHeadRow}>
-                <Text style={styles.cardLabel}>상담 거절 사유 분석 <Text style={styles.cardLabelHint}>(상담 후 치료 거절한 환자의 이유별 분포)</Text></Text>
+                <Text style={styles.cardLabel}>상담 거절 사유 분석</Text>
                 <Feather name="chevron-right" size={14} color="#CBD5E1" />
               </View>
               {finance.rejectionReasons.map((r, i) => (
@@ -1421,7 +1421,7 @@ export default function Dashboard() {
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("uncollected")}>
               <View style={styles.cardHeadRow}>
-                <Text style={styles.cardLabel}>미수금 회수 파이프라인 <Text style={styles.cardLabelHint}>(아직 못 받은 진료비 · 오래될수록 받기 어려움)</Text></Text>
+                <Text style={styles.cardLabel}>미수금 회수 파이프라인</Text>
                 <Feather name="chevron-right" size={14} color="#CBD5E1" />
               </View>
               <UncollectedFunnel total={finance.uncollected.total} buckets={finance.uncollected.buckets} />
@@ -1831,7 +1831,6 @@ const styles = StyleSheet.create({
   bepText: { fontSize: 11, color: "#64748B" },
   chartCaption: { fontSize: 10, color: "#94A3B8", marginTop: 6, textAlign: "center" as const },
   cardHeadRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 },
-  cardLabelHint: { fontSize: 10, fontWeight: "500" as const, color: "#94A3B8" },
   // Evidence modal
   evidenceModal: { position: "absolute", bottom: 0, left: 0, right: 0, height: "75%", borderTopLeftRadius: 28, borderTopRightRadius: 28, overflow: "hidden", borderWidth: 1, borderColor: "#E8EDF5", shadowColor: "#00153D", shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.1, shadowRadius: 16, elevation: 8 },
   evidenceInner: { flex: 1, padding: 20, gap: 14 },
