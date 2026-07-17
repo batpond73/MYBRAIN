@@ -827,7 +827,7 @@ function HRBarChart({ data }: { data: HrPeriodData["bars"] }) {
   const barW = (chartW / data.length) * 0.35;
   const gap = chartW / data.length;
   return (
-    <Svg width={chartW} height={chartH + 24}>
+    <Svg width={chartW} height={chartH + 24} viewBox={`0 0 ${chartW} ${chartH + 24}`}>
       {data.map((d, i) => {
         const revH = (d.revenue / maxVal) * chartH;
         const salH = (d.salary / maxVal) * chartH;
@@ -852,7 +852,7 @@ function NoShowChart({ data }: { data: FinancePeriodData["noShowTrend"] }) {
   const points = data.map((d, i) => ({ x: (i / Math.max(data.length - 1, 1)) * chartW, y: chartH - (d.rate / maxVal) * chartH }));
   const pathD = points.reduce((acc, p, i) => (i === 0 ? `M${p.x},${p.y}` : `${acc} L${p.x},${p.y}`), "");
   return (
-    <Svg width={chartW} height={chartH + 20}>
+    <Svg width={chartW} height={chartH + 20} viewBox={`0 0 ${chartW} ${chartH + 20}`}>
       <Path d={pathD} stroke="#FF3B30" strokeWidth={2} fill="none" />
       {points.map((p, i) => (
         <React.Fragment key={i}>
@@ -872,7 +872,7 @@ function DualAxisChart({ chartData }: { chartData: { time: string; waitMin: numb
   const ratePoints = chartData.map((d, i) => ({ x: i * gap, y: chartH - (d.consultRate / 100) * chartH }));
   const ratePath = ratePoints.reduce((acc, p, i) => (i === 0 ? `M${p.x},${p.y}` : `${acc} L${p.x},${p.y}`), "");
   return (
-    <Svg width={chartW} height={chartH + 20}>
+    <Svg width={chartW} height={chartH + 20} viewBox={`0 0 ${chartW} ${chartH + 20}`}>
       {chartData.map((d, i) => {
         const barH = (d.waitMin / maxWait) * chartH;
         const barW = Math.max(14, gap * 0.4);

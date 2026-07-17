@@ -15,6 +15,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HomeFab } from "@/components/HomeFab";
+import { NpsSurveyForm } from "@/components/help/NpsSurveyForm";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -398,6 +399,19 @@ export default function HelpScreen() {
           openKeys={openKeys}
           onToggle={toggle}
         />
+
+        {/* 환자 NPS 설문 폼 (인터랙티브 예시) */}
+        <View style={styles.sectionHead}>
+          <Feather name="clipboard" size={14} color="#33A6FF" />
+          <Text style={styles.sectionLabelInline}>환자 NPS 설문 폼 예시</Text>
+        </View>
+        <Text style={styles.sectionHint}>
+          진료 후 카카오톡·SMS로 환자에게 발송할 만족도 설문. 아래에서 직접 응답해보시면
+          Promoter/Passive/Detractor 분류와 원장님 액션 팁까지 즉시 확인할 수 있습니다.
+        </Text>
+        <View style={styles.card}>
+          <NpsSurveyForm />
+        </View>
 
         {/* 경영분석 레퍼런스 */}
         <View style={styles.sectionHead}>

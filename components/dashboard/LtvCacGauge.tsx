@@ -57,7 +57,7 @@ export function LtvCacGauge({
 
   return (
     <View style={styles.wrap}>
-      <Svg width={width} height={height}>
+      <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <Path d={bg}      stroke="#E8EDF5" strokeWidth={12} fill="none" strokeLinecap="round" />
         <Path d={optimal} stroke="#00C85344" strokeWidth={12} fill="none" strokeLinecap="butt" />
         <Path d={valueArc} stroke={status} strokeWidth={12} fill="none" strokeLinecap="round" />

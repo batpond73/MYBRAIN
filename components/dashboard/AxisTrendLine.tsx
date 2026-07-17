@@ -54,7 +54,7 @@ export function AxisTrendLine({
 
   return (
     <View>
-      <Svg width={chartW} height={chartH + 20}>
+      <Svg width={chartW} height={chartH + 20} viewBox={`0 0 ${chartW} ${chartH + 20}`}>
         {benchY !== null && (
           <>
             <Line
