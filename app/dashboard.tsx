@@ -338,7 +338,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   materialCost: {
     analysis: [
-      "현재 2.7% — Lean 비용 기준(≤6%) 대비 3.3%p 여유, 최상위",
+      "현재 2.7% — 재료비 안전 기준(≤20% 경고선) 대비 17.3%p 여유, 안정 병원 벤치(5~8%) 도 통과 · 최상위",
       "재료비 최저 수준 = Lean 원가 구조 완성 상태",
       "단가 절감보다 재료 품질 유지 여부 분기별 점검 필요",
     ],
@@ -356,7 +356,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   labFee: {
     analysis: [
-      "현재 2.1% — Lean 비용 기준(≤9%) 대비 6.9%p 여유, 최상위",
+      "현재 2.1% — 기공료 안전 기준(≤12% 경고선) 대비 9.9%p 여유, 안정 병원 벤치(3~7%) 도 통과 · 최상위",
       "디지털 덴티스트리 효과 반영 — 기공 효율 최대화 상태",
       "보철 케이스 확대 계획 시 기공료 선제적 예산 증액 필요",
     ],
@@ -431,7 +431,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   treatComplete: {
     analysis: [
-      "현재 74% — Value-Based Care 기준(≥85%) 대비 -11%p",
+      "현재 74% — 안전 기준(≥75%) 대비 -1%p (경고 진입 근처) · 최상위 벤치(85%)까지 -11%p",
       "치료 미완료 11% = 월 약 35명이 치료 중단 이탈",
       "중단 원인: 비용 부담 · 시간 부족 · 통증 우려 순",
     ],
@@ -449,8 +449,8 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   marketingROI: {
     analysis: [
-      "LTV:CAC 3.7x — Unit Economics 기준(3~5x 정상 구간) 정상 범위",
-      "v0.4 정정: ≥5x 무근거 기준 폐기, 마케팅 ROI = LTV:CAC 동일 산식으로 일치",
+      "현재 540% — 채널별 LTV/CAC 응용 기준(≥300% 정상 · ≥500% 우수) 우수 구간",
+      "LTV:CAC 3.7x가 상류에서 뒷받침 — 원 지표는 채널별 (환자 LTV × 유입수)/광고비",
       "결과 지표: 자체 개선 추구 말고 상류 원인(리콜·재내원)에 집중",
     ],
     solution: [
@@ -503,7 +503,7 @@ const ALL20_PRESCRIPTIONS: Record<string, KpiPrescription> = {
   },
   nps: {
     analysis: [
-      "현재 NPS 51 — 추세 판정: 62→47 하락 후 반등 중 (경고 단계)",
+      "현재 NPS 51 — 최근 5개월 추세 42→45→41→48→50 · 4개월 연속 반등",
       "v0.4 정정: 절대값 ≥60 기준 폐기 — 추세·분포 기반으로 정정",
       "NPS 60 이상 = 입소문 성장 임계점 — 소개 환자 급증 구간",
     ],

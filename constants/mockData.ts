@@ -734,10 +734,10 @@ export const KPI_BENCHMARKS = {
     },
     {
       id: 19, key: "marketingROI", name: "마케팅 ROI", unit: "%",
-      benchmark: "LTV:CAC와 동일 산식 (ID 3 일치)", current: "540%", status: "normal" as const,
+      benchmark: "채널별 LTV/CAC 응용 · ≥300% 정상 / ≥500% 우수", current: "540%", status: "normal" as const,
       judgeType: "DERIVED" as const, isResultMetric: true,
       upstreamKpiKeys: ["patientLtv", "recallRate"],
-      formula: "마케팅 채널 LTV / 채널 CAC",
+      formula: "채널별 (환자 LTV × 채널 유입수) / 채널 광고비",
     },
     {
       id: 20, key: "preventiveRecall", name: "예방·리콜 매출 비중", unit: "%",

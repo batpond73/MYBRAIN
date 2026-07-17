@@ -28,7 +28,7 @@ interface KpiInsight { kpiName: string; value: string; benchmark: string; status
 const KPI_INSIGHT: Record<string, KpiInsight> = {
   payroll:    { kpiName: "인건비 비율",    value: "35.4%",  benchmark: "기준 ≤ 25%",  status: "critical", impact: "업계 기준보다 10.4%p 초과 — 연간 약 4,900만 원 손실" },
   insurance:  { kpiName: "스태프 이직률", value: "12.5%",  benchmark: "기준 ≤ 15%",  status: "normal",   impact: "이직률 정상 범위 — 채용·교육 비용 안정적" },
-  material:   { kpiName: "재료비 비율",   value: "2.7%",   benchmark: "업계 5–7%",   status: "normal",   impact: "재료비 효율 우수 — 대량구매 계약 효과" },
+  material:   { kpiName: "재료비 비율",   value: "2.7%",   benchmark: "안전 ≤20% · 안정 병원 5~8%",   status: "normal",   impact: "재료비 효율 우수 — 대량구매 계약 효과" },
   labfee:     { kpiName: "기공료 비율",   value: "2.1%",   benchmark: "업계 8–10%",  status: "normal",   impact: "기공료 낮음 — 내부 제작 비율 확인 권장" },
   rent:       { kpiName: "임대료 비율",   value: "6.3%",   benchmark: "기준 ≤ 8%",   status: "normal",   impact: "임대료 정상 — 2027-08 만료 재협상 시 절감 기회" },
   fixedcost:  { kpiName: "총 고정비 비율",value: "11.7%",  benchmark: "기준 ≤ 55%",  status: "normal",   impact: "고정비 매우 안정적 — 감가상각·리스 구조 양호" },
