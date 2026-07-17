@@ -20,7 +20,7 @@ import { useAppContext } from "@/context/AppContext";
 export default function SignUpScreen() {
   const insets = useSafeAreaInsets();
   const { login, completeQuest } = useAppContext();
-  const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -28,32 +28,32 @@ export default function SignUpScreen() {
   const passwordRef = useRef<TextInput>(null);
 
   const handleSignUp = async () => {
-    if (!email || !password) { setError("이메일과 비밀번호를 입력해주세요."); return; }
-    if (!email.includes("@")) { setError("올바른 이메일 주소를 입력해주세요."); return; }
+    if (!userId || !password) { setError("아이디와 비밀번호를 입력해주세요."); return; }
+    if (userId.length < 4) { setError("아이디는 4자 이상 입력해주세요."); return; }
     setError("");
     setLoading(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login(email, "");
+    await login(userId, "");
     setLoading(false);
     router.replace("/(quest)");
   };
 
   const handleAppleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login("apple@mybrain.ai", "");
+    await login("apple_user", "");
     router.replace("/(quest)");
   };
 
   const handleGoogleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login("google@mybrain.ai", "");
+    await login("google_user", "");
     router.replace("/(quest)");
   };
 
   const handleDemo = async () => {
     try { await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); } catch {}
     setLoading(true);
-    await login("demo@mybrain.ai", "서울나눔치과의원");
+    await login("demo", "서울나눔치과의원");
     await completeQuest("quest1");
     await completeQuest("quest2");
     await completeQuest("quest3");
@@ -96,22 +96,22 @@ export default function SignUpScreen() {
           {/* 구분선 */}
           <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>또는 이메일로</Text>
+            <Text style={styles.dividerText}>또는 아이디로</Text>
             <View style={styles.dividerLine} />
           </View>
 
-          {/* 이메일 */}
-          <View style={[styles.inputWrapper, focusedField === "email" && styles.inputFocused]}>
+          {/* 아이디 */}
+          <View style={[styles.inputWrapper, focusedField === "userId" && styles.inputFocused]}>
             <TextInput
               style={styles.input}
-              placeholder="이메일"
+              placeholder="아이디 (4자 이상)"
               placeholderTextColor="#94A3B8"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
+              value={userId}
+              onChangeText={setUserId}
               autoCapitalize="none"
+              autoCorrect={false}
               returnKeyType="next"
-              onFocus={() => setFocusedField("email")}
+              onFocus={() => setFocusedField("userId")}
               onBlur={() => setFocusedField(null)}
               onSubmitEditing={() => passwordRef.current?.focus()}
             />

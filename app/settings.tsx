@@ -70,7 +70,7 @@ const SLIDER_DEFS = [
 
 export default function Settings() {
   const insets = useSafeAreaInsets();
-  const { clinicName, userEmail, questsCompleted, doctorProfile, setDoctorProfile, logout } = useAppContext();
+  const { clinicName, userId, questsCompleted, doctorProfile, setDoctorProfile, logout } = useAppContext();
   const [notify, setNotify] = useState(true);
   const [expandedKpiId, setExpandedKpiId] = useState<number | null>(null);
 
@@ -160,7 +160,7 @@ export default function Settings() {
           <Image source={require("@/assets/images/logo.png")} style={styles.profileLogo} contentFit="contain" />
           <View style={styles.profileInfo}>
             <Text style={styles.profileClinic}>{clinicName || "병원명 미설정"}</Text>
-            <Text style={styles.profileEmail}>{userEmail || "이메일 미설정"}</Text>
+            <Text style={styles.profileEmail}>{userId || "아이디 미설정"}</Text>
             <View style={styles.profileBadge}>
               <Feather name="shield" size={11} color="#33A6FF" />
               <Text style={styles.profileBadgeText}>원장님 전용 AI 관제탑</Text>

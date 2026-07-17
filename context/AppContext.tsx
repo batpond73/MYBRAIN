@@ -11,7 +11,7 @@ interface DoctorProfile {
 interface AppState {
   isAuthenticated: boolean;
   hasSeenIntro: boolean;
-  userEmail: string;
+  userId: string;
   clinicName: string;
   clinicTenureYears: number;
   questsCompleted: { quest1: boolean; quest2: boolean; quest3: boolean };
@@ -22,7 +22,7 @@ interface AppState {
 
 interface AppContextType extends AppState {
   isLoaded: boolean;
-  login: (email: string, clinicName: string) => Promise<void>;
+  login: (userId: string, clinicName: string) => Promise<void>;
   logout: () => Promise<void>;
   completeQuest: (quest: "quest1" | "quest2" | "quest3") => Promise<void>;
   setDoctorProfile: (profile: Partial<DoctorProfile>) => void;
@@ -35,7 +35,7 @@ interface AppContextType extends AppState {
 const defaultState: AppState = {
   isAuthenticated: false,
   hasSeenIntro: false, // intentionally NOT persisted to AsyncStorage
-  userEmail: "",
+  userId: "",
   clinicName: "",
   clinicTenureYears: 3, // v0.4: REL 판정용 개원 연차 (0=신규, 3=안정기, 7+=성숙)
   questsCompleted: { quest1: false, quest2: false, quest3: false },
@@ -88,8 +88,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   };
 
-  const login = async (email: string, clinicName: string) => {
-    await save({ ...state, isAuthenticated: true, userEmail: email, clinicName });
+  const login = async (userId: string, clinicName: string) => {
+    await save({ ...state, isAuthenticated: true, userId, clinicName });
   };
 
   const logout = async () => {
