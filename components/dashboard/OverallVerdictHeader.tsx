@@ -16,6 +16,7 @@ type Props = {
   rootCauseReason: string;
   onPressOverall?: () => void;
   onPressRootCause?: () => void;
+  onPressExplainScore?: () => void;
 };
 
 export function OverallVerdictHeader({
@@ -27,6 +28,7 @@ export function OverallVerdictHeader({
   rootCauseReason,
   onPressOverall,
   onPressRootCause,
+  onPressExplainScore,
 }: Props) {
   return (
     <View style={styles.wrap}>
@@ -37,12 +39,18 @@ export function OverallVerdictHeader({
       </View>
       <Text style={styles.verdict}>{verdict}</Text>
 
-      {/* 3축 스코어 배지 */}
+      {/* 3축 스코어 배지 (탭 → 설명 모달) */}
       <View style={styles.axisRow}>
-        <AxisScoreBadge label="수익성" score={scores.profitability} band={bandOf(scores.profitability)} framework="Unit Economics" />
-        <AxisScoreBadge label="유지"   score={scores.retention}     band={bandOf(scores.retention)}     framework="NRR·VBC" />
-        <AxisScoreBadge label="리스크" score={scores.risk}          band={bandOf(scores.risk)}          framework="Lean·재무" />
+        <AxisScoreBadge label="수익성" score={scores.profitability} band={bandOf(scores.profitability)} framework="Unit Economics" onPressExplain={onPressExplainScore} />
+        <AxisScoreBadge label="유지"   score={scores.retention}     band={bandOf(scores.retention)}     framework="NRR·VBC"        onPressExplain={onPressExplainScore} />
+        <AxisScoreBadge label="리스크" score={scores.risk}          band={bandOf(scores.risk)}          framework="Lean·재무"      onPressExplain={onPressExplainScore} />
       </View>
+      {onPressExplainScore && (
+        <TouchableOpacity style={styles.explainHint} onPress={onPressExplainScore} activeOpacity={0.7}>
+          <Feather name="help-circle" size={11} color="#8B5CF6" />
+          <Text style={styles.explainHintText}>배지를 탭하면 "이 점수는 뭐죠?" 쉬운 설명이 열립니다</Text>
+        </TouchableOpacity>
+      )}
 
       {/* 원인 지표 카드 */}
       {rootCause && rootCauseName && (
@@ -96,6 +104,11 @@ const styles = StyleSheet.create({
   verdict: { fontSize: 12, color: "#475569", lineHeight: 18 },
 
   axisRow: { flexDirection: "row", gap: 8 },
+  explainHint: {
+    flexDirection: "row", alignItems: "center", gap: 4,
+    alignSelf: "center", paddingVertical: 2,
+  },
+  explainHintText: { fontSize: 10, color: "#8B5CF6", fontWeight: "600" as const },
 
   rootCauseCard: {
     backgroundColor: "#FFFBEB",

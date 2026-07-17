@@ -1,5 +1,6 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import type { ScoreBand } from "@/lib/financialInsights";
 
@@ -30,24 +31,33 @@ export function AxisScoreBadge({
   score,
   band,
   framework,
+  onPressExplain,
 }: {
   label: string;
   score: number;
   band: ScoreBand;
   framework: string;
+  onPressExplain?: () => void;
 }) {
   const color = BAND_COLOR[band];
   const bg = BAND_BG[band];
   const bandLabel = BAND_LABEL[band];
   const barPct = Math.max(0, Math.min(100, score));
 
+  const Container: any = onPressExplain ? TouchableOpacity : View;
+  const containerProps = onPressExplain ? { onPress: onPressExplain, activeOpacity: 0.75, accessibilityLabel: `${label} 스코어 설명 보기` } : {};
+
   return (
-    <View style={[styles.wrap, { backgroundColor: bg, borderColor: `${color}33` }]}>
+    <Container style={[styles.wrap, { backgroundColor: bg, borderColor: `${color}33` }]} {...containerProps}>
       <View style={styles.row}>
         <Text style={styles.label}>{label}</Text>
-        <View style={[styles.pill, { backgroundColor: `${color}22` }]}>
-          <Text style={[styles.pillText, { color }]}>{bandLabel}</Text>
-        </View>
+        {onPressExplain ? (
+          <Feather name="help-circle" size={11} color={color} style={{ opacity: 0.6 }} />
+        ) : (
+          <View style={[styles.pill, { backgroundColor: `${color}22` }]}>
+            <Text style={[styles.pillText, { color }]}>{bandLabel}</Text>
+          </View>
+        )}
       </View>
       <View style={styles.scoreRow}>
         <Text style={[styles.score, { color }]}>{score}</Text>
@@ -57,7 +67,8 @@ export function AxisScoreBadge({
         <View style={[styles.barFill, { width: `${barPct}%`, backgroundColor: color }]} />
       </View>
       <Text style={styles.framework}>{framework}</Text>
-    </View>
+      {onPressExplain && <Text style={[styles.bandLabelText, { color }]}>{bandLabel}</Text>}
+    </Container>
   );
 }
 
@@ -79,4 +90,5 @@ const styles = StyleSheet.create({
   barTrack: { height: 4, backgroundColor: "#FFFFFF", borderRadius: 2, overflow: "hidden", marginTop: 2 },
   barFill: { height: "100%", borderRadius: 2 },
   framework: { fontSize: 9, color: "#64748B", marginTop: 2 },
+  bandLabelText: { fontSize: 9, fontWeight: "700" as const, marginTop: 1 },
 });

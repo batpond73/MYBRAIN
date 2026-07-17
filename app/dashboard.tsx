@@ -37,6 +37,7 @@ import { LaborCrossCard } from "@/components/dashboard/LaborCrossCard";
 import { LtvCacGauge } from "@/components/dashboard/LtvCacGauge";
 import { OverallVerdictHeader } from "@/components/dashboard/OverallVerdictHeader";
 import { RetentionTrio } from "@/components/dashboard/RetentionTrio";
+import { ScoreExplainerModal } from "@/components/dashboard/ScoreExplainerModal";
 import { SectionHeader } from "@/components/dashboard/SectionHeader";
 import { UncollectedFunnel } from "@/components/dashboard/UncollectedFunnel";
 import { computeAxisScores, pickRootCause } from "@/lib/financialInsights";
@@ -969,6 +970,7 @@ export default function Dashboard() {
 
   const [activePanel, setActivePanel] = useState(1);
   const [aiLoading, setAiLoading] = useState(false);
+  const [scoreExplainerOpen, setScoreExplainerOpen] = useState(false);
   const [expandedCrisis, setExpandedCrisis] = useState<Set<string>>(new Set());
   const [prescriptionKpi, setPrescriptionKpi] = useState<string | null>(null);
   const prescriptionAnim = useRef(new Animated.Value(0)).current;
@@ -1301,10 +1303,11 @@ export default function Dashboard() {
               rootCauseReason={finance.rootCauseReason}
               onPressOverall={() => openKpiPrescription("overall")}
               onPressRootCause={() => rootCause && openKpiPrescription(rootCause.kpiKey)}
+              onPressExplainScore={() => setScoreExplainerOpen(true)}
             />
 
             {/* ═══ 섹션 1: 수익성 (Unit Economics) ══════════════ */}
-            <SectionHeader title="수익성" framework="Unit Economics (a16z 2024)" score={axisScores.profitability} />
+            <SectionHeader title="수익성" framework="Unit Economics (a16z 2024)" score={axisScores.profitability} onPressExplain={() => setScoreExplainerOpen(true)} />
             <InsightCard tone="profit" text={finance.profitabilityInsight} />
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("ltvCac")}>
@@ -1356,7 +1359,7 @@ export default function Dashboard() {
             </View>
 
             {/* ═══ 섹션 2: 유지 (NRR · Value-Based Care) ═══════ */}
-            <SectionHeader title="유지" framework="NRR · Value-Based Care" score={axisScores.retention} />
+            <SectionHeader title="유지" framework="NRR · Value-Based Care" score={axisScores.retention} onPressExplain={() => setScoreExplainerOpen(true)} />
             <InsightCard tone="retention" text={finance.retentionInsight} />
 
             <View style={styles.card}>
@@ -1371,7 +1374,7 @@ export default function Dashboard() {
             </View>
 
             {/* ═══ 섹션 3: 리스크·현금 (Lean · 재무 기본) ═══════ */}
-            <SectionHeader title="리스크·현금" framework="Lean Healthcare · 재무 기본" score={axisScores.risk} />
+            <SectionHeader title="리스크·현금" framework="Lean Healthcare · 재무 기본" score={axisScores.risk} onPressExplain={() => setScoreExplainerOpen(true)} />
             <InsightCard tone="risk" text={finance.riskInsight} />
 
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openKpiPrescription("noShow")}>
@@ -1670,6 +1673,12 @@ export default function Dashboard() {
           </Animated.View>
         </View>
       )}
+
+      <ScoreExplainerModal
+        visible={scoreExplainerOpen}
+        onClose={() => setScoreExplainerOpen(false)}
+        scores={axisScores}
+      />
     </View>
   );
 }

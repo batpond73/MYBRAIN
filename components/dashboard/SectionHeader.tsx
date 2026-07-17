@@ -1,5 +1,6 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { bandOf, type ScoreBand } from "@/lib/financialInsights";
 
@@ -23,10 +24,12 @@ export function SectionHeader({
   title,
   framework,
   score,
+  onPressExplain,
 }: {
   title: string;
   framework: string;
   score: number;
+  onPressExplain?: () => void;
 }) {
   const band = bandOf(score);
   const color = BAND_COLOR[band];
@@ -37,10 +40,17 @@ export function SectionHeader({
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.framework}>{framework}</Text>
       </View>
-      <View style={[styles.pill, { backgroundColor: bg }]}>
+      <TouchableOpacity
+        style={[styles.pill, { backgroundColor: bg }]}
+        activeOpacity={onPressExplain ? 0.7 : 1}
+        onPress={onPressExplain}
+        disabled={!onPressExplain}
+        accessibilityLabel="스코어 설명 보기"
+      >
         <Text style={[styles.pillScore, { color }]}>{score}</Text>
         <Text style={[styles.pillMax, { color }]}>/100</Text>
-      </View>
+        {onPressExplain && <Feather name="help-circle" size={11} color={color} style={{ marginLeft: 3, opacity: 0.7 }} />}
+      </TouchableOpacity>
     </View>
   );
 }
