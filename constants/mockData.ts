@@ -901,20 +901,6 @@ export const TREATMENT_MIX = {
   ],
 };
 
-export const UNCOLLECTED_DATA = {
-  month: "2026-05",
-  totalBilled: 78500000,
-  totalCollected: 74800000,
-  uncollectedAmount: 3700000,
-  uncollectedRatio: 4.7,
-  items: [
-    { patientId: "P0312", amount: 1200000, daysPending: 42, reason: "분납 약정" },
-    { patientId: "P0455", amount: 800000, daysPending: 28, reason: "카드 오류" },
-    { patientId: "P0501", amount: 950000, daysPending: 15, reason: "보험 청구 대기" },
-    { patientId: "P0622", amount: 750000, daysPending: 7, reason: "분납 약정" },
-  ],
-};
-
 export const MARKETING_DATA = {
   month: "2026-05",
   totalSpend: 1720000,
