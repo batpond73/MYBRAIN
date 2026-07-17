@@ -23,7 +23,12 @@ function DonutGauge({ value, color, size = 72 }: { value: number; color: string;
   const pct = Math.max(0, Math.min(100, value));
   const dashOffset = c * (1 - pct / 100);
   return (
-    <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <Svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      style={{ width: size, height: size }}
+    >
       <Circle cx={size / 2} cy={size / 2} r={r} stroke="#E8EDF5" strokeWidth={stroke} fill="none" />
       <Circle
         cx={size / 2}

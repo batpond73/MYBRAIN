@@ -58,6 +58,7 @@ function RootLayoutNav() {
       <Stack.Screen name="daily-receipt" options={{ animation: "slide_from_bottom", presentation: "modal" }} />
       <Stack.Screen name="settings" options={{ animation: "slide_from_right" }} />
       <Stack.Screen name="help" options={{ animation: "slide_from_right" }} />
+      <Stack.Screen name="survey" options={{ animation: "fade" }} />
     </Stack>
   );
 }

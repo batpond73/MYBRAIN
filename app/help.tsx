@@ -15,6 +15,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HomeFab } from "@/components/HomeFab";
+import { NpsExportCard } from "@/components/help/NpsExportCard";
 import { NpsSurveyForm } from "@/components/help/NpsSurveyForm";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -411,6 +412,18 @@ export default function HelpScreen() {
         </Text>
         <View style={styles.card}>
           <NpsSurveyForm />
+        </View>
+
+        {/* NPS 내보내기 · 응답 집계 · CSV 교환 */}
+        <View style={styles.sectionHead}>
+          <Feather name="share-2" size={14} color="#33A6FF" />
+          <Text style={styles.sectionLabelInline}>NPS 태블릿 배포 · 응답 집계</Text>
+        </View>
+        <Text style={styles.sectionHint}>
+          위 폼을 태블릿에 열어 환자에게 받고, 응답을 이 기기로 병합·집계합니다.
+        </Text>
+        <View style={styles.card}>
+          <NpsExportCard />
         </View>
 
         {/* 경영분석 레퍼런스 */}

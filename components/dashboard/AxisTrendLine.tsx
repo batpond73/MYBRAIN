@@ -53,8 +53,13 @@ export function AxisTrendLine({
   const benchY = benchmark !== undefined ? yAt(benchmark) : null;
 
   return (
-    <View>
-      <Svg width={chartW} height={chartH + 20} viewBox={`0 0 ${chartW} ${chartH + 20}`}>
+    <View style={{ width: chartW }}>
+      <Svg
+        width={chartW}
+        height={chartH + 20}
+        viewBox={`0 0 ${chartW} ${chartH + 20}`}
+        style={{ width: chartW, height: chartH + 20 }}
+      >
         {benchY !== null && (
           <>
             <Line

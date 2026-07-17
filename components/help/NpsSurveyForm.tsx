@@ -3,6 +3,8 @@ import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+import { saveResponse } from "@/lib/npsStorage";
+
 /**
  * 환자용 NPS 설문 폼 예시.
  *
@@ -90,7 +92,16 @@ function npsRange(score: number): string {
   return "위기 (부정 후기·이탈 방지 즉시 착수)";
 }
 
-export function NpsSurveyForm() {
+type Mode = "demo" | "collect";
+
+/**
+ * mode="demo"    도움말 페이지 내 원장 미리보기. 제출 시 인사이트/처방/
+ *                 계산법까지 전부 보여줌. 저장은 하되 source="director-demo"
+ *                 로 태깅해 실제 환자 응답과 구분.
+ * mode="collect" 태블릿 공개 폼. 제출 후 짧은 감사 메시지만 표시하고
+ *                 원장 UI는 노출하지 않음. source="tablet".
+ */
+export function NpsSurveyForm({ mode = "demo", onSubmitted }: { mode?: Mode; onSubmitted?: () => void } = {}) {
   const [score, setScore] = useState<number | null>(null);
   const [reason, setReason] = useState("");
   const [subScores, setSubScores] = useState<Record<string, number>>({});
@@ -108,7 +119,22 @@ export function NpsSurveyForm() {
   const submit = async () => {
     if (score === null) return;
     try { await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); } catch {}
+    try {
+      await saveResponse({
+        score,
+        category: categoryOf(score),
+        reason,
+        sub: {
+          booking:  subScores.booking  ?? null,
+          wait:     subScores.wait     ?? null,
+          explain:  subScores.explain  ?? null,
+          kindness: subScores.kindness ?? null,
+        },
+        source: mode === "collect" ? "tablet" : "director-demo",
+      });
+    } catch {}
     setSubmitted(true);
+    onSubmitted?.();
   };
   const reset = async () => {
     try { await Haptics.selectionAsync(); } catch {}
@@ -226,8 +252,22 @@ export function NpsSurveyForm() {
         </TouchableOpacity>
       </View>
 
-      {/* ── 제출 결과 · 원장 인사이트 ────────────── */}
-      {submitted && score !== null && category && (
+      {/* ── 제출 결과 (환자용 collect 모드) ───────── */}
+      {submitted && mode === "collect" && (
+        <View style={styles.thankCard}>
+          <Feather name="check-circle" size={36} color="#00C853" />
+          <Text style={styles.thankTitle}>감사합니다</Text>
+          <Text style={styles.thankBody}>
+            소중한 응답이 접수되었습니다. 원장님이 직접 검토합니다.
+          </Text>
+          <TouchableOpacity style={styles.thankResetBtn} onPress={reset} activeOpacity={0.85}>
+            <Text style={styles.thankResetBtnText}>다음 환자를 위해 초기화</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* ── 제출 결과 · 원장 인사이트 (demo 모드) ─── */}
+      {submitted && mode === "demo" && score !== null && category && (
         <View style={styles.resultCard}>
           <View style={styles.resultHead}>
             <Feather name="user" size={14} color="#8B5CF6" />
@@ -400,4 +440,26 @@ const styles = StyleSheet.create({
     height: 36, borderRadius: 10, backgroundColor: "#F1F5F9",
   },
   resetBtnText: { fontSize: 12, color: "#64748B", fontWeight: "700" as const },
+
+  // 환자용 감사 카드 (collect 모드)
+  thankCard: {
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#A7F3C8",
+    padding: 24,
+    marginTop: 6,
+  },
+  thankTitle: { fontSize: 18, fontWeight: "800" as const, color: "#00153D" },
+  thankBody: { fontSize: 13, color: "#475569", textAlign: "center" as const, lineHeight: 20 },
+  thankResetBtn: {
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: "#33A6FF",
+  },
+  thankResetBtnText: { color: "#FFFFFF", fontWeight: "700" as const, fontSize: 13 },
 });
