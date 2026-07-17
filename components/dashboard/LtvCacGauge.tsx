@@ -33,8 +33,10 @@ export function LtvCacGauge({
     const s = polar(startDeg, r);
     const e = polar(endDeg, r);
     const largeArc = Math.abs(startDeg - endDeg) > 180 ? 1 : 0;
-    // startDeg > endDeg (시계 방향) 이므로 sweep=0
-    return `M ${s.x},${s.y} A ${r},${r} 0 ${largeArc} 0 ${e.x},${e.y}`;
+    // polar()는 y-flip(수학적 각도)이라, 시각적으로 위 반원을 그리려면
+    // SVG arc sweep flag = 1 (시계 방향, y-down 좌표계 기준).
+    // sweep=0 이면 반원이 화면 아래로 그려져 프레임 밖으로 잘렸음.
+    return `M ${s.x},${s.y} A ${r},${r} 0 ${largeArc} 1 ${e.x},${e.y}`;
   };
 
   // 밴드 (배경)
