@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HomeFab } from "@/components/HomeFab";
 import { useAppContext } from "@/context/AppContext";
 
 const SCAN_TYPES = [
@@ -224,7 +225,8 @@ export default function QuestScan() {
           onPress={() => {
             if (parsed) { setImageUri(null); setParsed(null); }
             else if (imageUri) { setImageUri(null); }
-            else router.back();
+            else if (router.canGoBack()) router.back();
+            else router.replace("/dashboard");
           }}
           style={styles.backBtn}
         >
@@ -422,6 +424,8 @@ export default function QuestScan() {
           </TouchableOpacity>
         </View>
       </Modal>
+
+      <HomeFab />
     </View>
   );
 }

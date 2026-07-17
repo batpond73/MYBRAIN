@@ -20,6 +20,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HomeFab } from "@/components/HomeFab";
+
 const CATEGORIES = [
   { id: "material",   label: "재료비",   color: "#33A6FF", bg: "#EBF5FF" },
   { id: "labor",      label: "인건비",   color: "#FF3B30", bg: "#FFF0EE" },
@@ -164,7 +166,13 @@ export default function DailyReceipt() {
 
       {/* 헤더 */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity
+          onPress={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace("/dashboard");
+          }}
+          style={styles.backBtn}
+        >
           <Feather name="arrow-left" size={22} color="#00153D" />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
@@ -342,6 +350,8 @@ export default function DailyReceipt() {
           </TouchableOpacity>
         </View>
       </Modal>
+
+      <HomeFab />
     </View>
   );
 }

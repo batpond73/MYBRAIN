@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HomeFab } from "@/components/HomeFab";
 import { KPI_HISTORY, KpiHistoryData, KpiStatus, TrendResult } from "@/constants/historyData";
 
 const STATUS_COLOR: Record<KpiStatus, string> = {
@@ -285,7 +286,13 @@ export default function History() {
     <View style={[s.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
+        <TouchableOpacity
+          onPress={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace("/dashboard");
+          }}
+          style={s.backBtn}
+        >
           <Feather name="chevron-left" size={26} color="#00153D" />
         </TouchableOpacity>
         <View>
@@ -358,6 +365,8 @@ export default function History() {
           <Text style={s.footer}>탭하면 월별 상세 타임라인이 펼쳐집니다</Text>
         </View>
       </ScrollView>
+
+      <HomeFab />
     </View>
   );
 }

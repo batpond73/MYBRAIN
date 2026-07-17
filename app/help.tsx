@@ -14,11 +14,14 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HomeFab } from "@/components/HomeFab";
+
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 type Entry = { q: string; a: string };
+type Reference = { name: string; org: string; year: string; note: string };
 
 // ── 사용 가이드 ─────────────────────────────────────────────────────
 // 앱을 처음 여는 원장님이 무엇을 어떤 순서로 하면 되는지, 각 화면이
@@ -51,6 +54,85 @@ const GUIDE: Entry[] = [
   {
     q: "7. 원장님 진료 스타일은 왜 조정하나요?",
     a: "동일한 KPI라도 '신속·효율'을 우선하는 원장님과 '꼼꼼·안정'을 우선하는 원장님의 이상적 수치는 다릅니다. 슬라이더 3개(속도·소통·체어)와 경영 성향(공격적 확장 / 고정비 절감)을 조정하면, AI가 원장님 성향에 맞춰 판정 기준과 조언을 다르게 냅니다. 언제든 설정에서 다시 바꿀 수 있고 자동 저장됩니다.",
+  },
+];
+
+// ── 경영분석 레퍼런스 ─────────────────────────────────────────────
+// 대시보드 벤치마크와 처방 로직이 근거로 삼는 공개 자료·분석 프레임워크.
+// 각 KPI 카드 하단의 "Lean 기준", "Unit Economics 기준" 같은 문구가
+// 어디서 나온 숫자인지 원장님이 직접 확인할 수 있게 정리.
+const REFERENCES: { section: string; hint: string; items: Reference[] }[] = [
+  {
+    section: "공식 통계 · 백서",
+    hint: "국내외 치과·의료 산업 벤치마크 수치의 원천",
+    items: [
+      {
+        name: "의료자원통계핸드북",
+        org: "건강보험심사평가원 (HIRA)",
+        year: "2025",
+        note: "체어 수·인력·시설 규모별 국내 의원 통계. 체어 가동률·인당 매출 판정 기준.",
+      },
+      {
+        name: "치과의료통계연보",
+        org: "대한치과의사협회",
+        year: "2024",
+        note: "국내 치과의원 진료 건수·객단가·개원 연차 분포. 연차별 정상 매출 구간 산출.",
+      },
+      {
+        name: "진료비 통계",
+        org: "국민건강보험공단",
+        year: "2024",
+        note: "보험 청구액·비급여 매출 비율. 매출 구조 벤치마크와 예방·리콜 매출 비중 근거.",
+      },
+      {
+        name: "The Dental Practice Report",
+        org: "ADA Health Policy Institute",
+        year: "2024",
+        note: "미국 치과의원 인건비·재료비·기공료 비율 국제 벤치마크. 비용 지표 상한선 근거.",
+      },
+      {
+        name: "2024 Dental Practice Benchmark Study",
+        org: "Levin Group",
+        year: "2024",
+        note: "치과 컨설팅 40년 자산 데이터. 상담 동의율·노쇼율·재내원율 등 환자 지표 벤치마크.",
+      },
+    ],
+  },
+  {
+    section: "분석 방법론 · 프레임워크",
+    hint: "각 KPI를 판정하고 AI 처방을 만드는 데 쓰이는 이론 체계",
+    items: [
+      {
+        name: "Unit Economics",
+        org: "Andreessen Horowitz (a16z)",
+        year: "2024",
+        note: "환자 1명당 경제성(LTV·CAC·Payback) 분석. LTV:CAC 3~5배, Payback 12일 이하 기준의 출처.",
+      },
+      {
+        name: "Lean Healthcare · TPS",
+        org: "Toyota Production System 응용",
+        year: "—",
+        note: "7대 낭비(대기·재고·이동…) 제거 관점. 대기시간 10분 이하, 당일 취소율 3% 이하, 재료비 상한선 근거.",
+      },
+      {
+        name: "Value-Based Care",
+        org: "Michael Porter · Harvard Business School",
+        year: "2010~",
+        note: "행위량이 아닌 진료 결과 중심 성과 평가. 진료 완료율·환자 NPS·재내원율 판정 관점.",
+      },
+      {
+        name: "Theory of Constraints (TOC)",
+        org: "Eliyahu M. Goldratt",
+        year: "1984",
+        note: "병목 자원 식별 후 그 자원만 최적화하는 전략. 체어 가동률·상담 슬롯이 병목일 때 적용.",
+      },
+      {
+        name: "NRR · 유지 경제학",
+        org: "SaaS 재무 방법론 응용",
+        year: "—",
+        note: "Net Revenue Retention. 신환보다 기존 환자 유지·확대가 매출 안정성에 더 크게 기여한다는 관점. 재내원율·리콜 성공률·예방 비중의 상위 원리.",
+      },
+    ],
   },
 ];
 
@@ -317,6 +399,44 @@ export default function HelpScreen() {
           onToggle={toggle}
         />
 
+        {/* 경영분석 레퍼런스 */}
+        <View style={styles.sectionHead}>
+          <Feather name="book" size={14} color="#33A6FF" />
+          <Text style={styles.sectionLabelInline}>경영분석 레퍼런스</Text>
+        </View>
+        <Text style={styles.sectionHint}>
+          앱이 보여주는 벤치마크와 AI 처방이 근거로 삼는 공개 자료·이론.
+        </Text>
+        {REFERENCES.map((group) => (
+          <View key={group.section} style={styles.card}>
+            <View style={styles.glossaryGroupHead}>
+              <Feather name="bookmark" size={12} color="#33A6FF" />
+              <Text style={styles.glossaryGroupText}>{group.section}</Text>
+            </View>
+            <Text style={styles.refGroupHint}>{group.hint}</Text>
+            {group.items.map((ref, idx) => (
+              <View key={ref.name}>
+                <View style={styles.refRow}>
+                  <View style={styles.refBullet}>
+                    <Text style={styles.refBulletText}>{idx + 1}</Text>
+                  </View>
+                  <View style={{ flex: 1, gap: 3 }}>
+                    <Text style={styles.refName}>
+                      {ref.name}
+                      {ref.year !== "—" && (
+                        <Text style={styles.refYear}> · {ref.year}</Text>
+                      )}
+                    </Text>
+                    <Text style={styles.refOrg}>{ref.org}</Text>
+                    <Text style={styles.refNote}>{ref.note}</Text>
+                  </View>
+                </View>
+                {idx < group.items.length - 1 && <View style={styles.divider} />}
+              </View>
+            ))}
+          </View>
+        ))}
+
         {/* 자주 묻는 질문 */}
         <Section
           icon="help-circle"
@@ -375,6 +495,8 @@ export default function HelpScreen() {
           도움이 더 필요하시면 설정 &gt; 앱 버전에 표시된 채널로 문의 주세요.
         </Text>
       </ScrollView>
+
+      <HomeFab />
     </View>
   );
 }
@@ -493,6 +615,18 @@ const styles = StyleSheet.create({
 
   termText: { fontSize: 14, fontWeight: "700" as const, color: "#00153D" },
   termShort: { fontSize: 11, color: "#94A3B8", fontStyle: "italic" as const },
+
+  refGroupHint: { fontSize: 11, color: "#94A3B8", marginBottom: 10, lineHeight: 16 },
+  refRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, paddingVertical: 8 },
+  refBullet: {
+    width: 22, height: 22, borderRadius: 8, backgroundColor: "#EBF5FF",
+    alignItems: "center", justifyContent: "center", marginTop: 1,
+  },
+  refBulletText: { fontSize: 10, fontWeight: "800" as const, color: "#33A6FF" },
+  refName: { fontSize: 13, fontWeight: "700" as const, color: "#00153D" },
+  refYear: { fontSize: 11, color: "#94A3B8", fontWeight: "500" as const },
+  refOrg: { fontSize: 11, color: "#33A6FF", fontWeight: "600" as const },
+  refNote: { fontSize: 11, color: "#475569", lineHeight: 17 },
 
   footer: {
     textAlign: "center", fontSize: 11, color: "#CBD5E1",

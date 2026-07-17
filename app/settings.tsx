@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Alert, Animated, LayoutAnimation, PanResponder, Platform, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, UIManager, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HomeFab } from "@/components/HomeFab";
 import { useAppContext } from "@/context/AppContext";
 import { KPI_BENCHMARKS } from "@/constants/mockData";
 
@@ -426,6 +427,8 @@ export default function Settings() {
 
         <Text style={styles.footer}>myBrain AGE+ Brain · 병원장 전용 AI 관제탑</Text>
       </ScrollView>
+
+      <HomeFab />
     </View>
   );
 }

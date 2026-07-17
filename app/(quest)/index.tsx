@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HomeFab } from "@/components/HomeFab";
 import { useAppContext } from "@/context/AppContext";
 
 interface QuestCardProps {
@@ -153,6 +154,8 @@ export default function QuestHome() {
           <Text style={styles.completeText}>AI 관제탑 활성화 중...</Text>
         </View>
       )}
+
+      <HomeFab />
     </View>
   );
 }

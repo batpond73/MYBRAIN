@@ -13,6 +13,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HomeFab } from "@/components/HomeFab";
+
 import { useAppContext } from "@/context/AppContext";
 
 const EMR_OPTIONS = [
@@ -57,7 +59,13 @@ export default function QuestEMR() {
       <LinearGradient colors={["#EBF5FF", "#FFFFFF"]} style={StyleSheet.absoluteFill} />
 
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity
+          onPress={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace("/dashboard");
+          }}
+          style={styles.backBtn}
+        >
           <Feather name="arrow-left" size={22} color="#00153D" />
         </TouchableOpacity>
         <View style={styles.badge}>
@@ -137,6 +145,8 @@ export default function QuestEMR() {
           </View>
         </View>
       </Modal>
+
+      <HomeFab />
     </View>
   );
 }

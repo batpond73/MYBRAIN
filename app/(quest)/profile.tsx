@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, PanResponder, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HomeFab } from "@/components/HomeFab";
 import { useAppContext } from "@/context/AppContext";
 
 function CustomSlider({ value, onValueChange }: { value: number; onValueChange: (v: number) => void }) {
@@ -95,7 +96,13 @@ export default function QuestProfile() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <LinearGradient colors={["#EBF5FF", "#FFFFFF"]} style={StyleSheet.absoluteFill} />
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity
+          onPress={() => {
+            if (router.canGoBack()) router.back();
+            else router.replace("/dashboard");
+          }}
+          style={styles.backBtn}
+        >
           <Feather name="arrow-left" size={22} color="#00153D" />
         </TouchableOpacity>
         <View style={styles.badge}><Text style={styles.badgeText}>QUEST 2</Text></View>
@@ -149,6 +156,8 @@ export default function QuestProfile() {
           <Feather name="check" size={18} color="#fff" />
         </TouchableOpacity>
       </ScrollView>
+
+      <HomeFab />
     </View>
   );
 }
