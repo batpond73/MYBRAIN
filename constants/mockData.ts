@@ -452,6 +452,146 @@ export const KPI_BENCHMARKS = {
   ],
 };
 
+// ── 20개 KPI 스냅샷 (period별) ─────────────────────────────────
+// KPI_BENCHMARKS.all20 / top3는 canonical 참조 세트 (이번 달 값 기준).
+// 설정·도움말 페이지의 지표 사전은 canonical을 그대로 사용한다.
+// 대시보드는 아래 스냅샷을 period로 lookup해 current/status만 덮어써
+// 4개 기간 뷰를 만든다. 스냅샷 id는 KPI_BENCHMARKS.all20의 id와 매칭.
+type KpiStatus = "crisis" | "warning" | "normal" | "best";
+type PeriodKey = "today" | "week" | "month" | "quarter";
+export type Kpi20Snapshot = { id: number; current: string; status: KpiStatus };
+export type KpiTop3Snapshot = { id: string; current: number };
+
+// 위기 카드에 등장하는 EXTRA_CRISIS_KPIS (당일 취소율·미수금)의
+// 수치만 period로 갈아끼우는 룩업. all20 스냅샷의 id 6/7과 값이
+// 동일하지만 numeric으로 필요해 별도 dict.
+export const KPI_EXTRA_CRISIS_BY_PERIOD: Record<PeriodKey, Record<string, number>> = {
+  today:   { cancelRate: 6.7, uncollected: 3.2 },
+  week:    { cancelRate: 7.5, uncollected: 4.1 },
+  month:   { cancelRate: 8.7, uncollected: 4.7 },
+  quarter: { cancelRate: 7.8, uncollected: 4.3 },
+};
+
+export const KPI_TOP3_BY_PERIOD: Record<PeriodKey, KpiTop3Snapshot[]> = {
+  today: [
+    { id: "laborCost",      current: 30.0 },
+    { id: "noShow",         current: 5.0 },
+    { id: "caseAcceptance", current: 56 },
+  ],
+  week: [
+    { id: "laborCost",      current: 36.1 },
+    { id: "noShow",         current: 7.4 },
+    { id: "caseAcceptance", current: 54 },
+  ],
+  month: [
+    { id: "laborCost",      current: 35.4 },
+    { id: "noShow",         current: 8.7 },
+    { id: "caseAcceptance", current: 52 },
+  ],
+  quarter: [
+    { id: "laborCost",      current: 35.8 },
+    { id: "noShow",         current: 6.7 },
+    { id: "caseAcceptance", current: 51 },
+  ],
+};
+
+// 값 근거: 비율 지표는 period가 짧을수록 표본 노이즈 큼 (오늘 값이 극단).
+// 절대 지표(매출·인당생산성 등)는 기간 길이에 스케일. status는 canonical
+// 판정 로직 재적용 결과 — 임계값 통과 여부에 따라 today/quarter에서 몇
+// 개 지표의 등급이 실제로 바뀐다 (예: 미수금 today=warning, 나머지=crisis;
+// 리콜 quarter=crisis, 나머지=warning; 순이익률 today=normal, 나머지=warning;
+// 진료 완료율 today=normal, 나머지=warning).
+export const KPI_ALL20_BY_PERIOD: Record<PeriodKey, Kpi20Snapshot[]> = {
+  today: [
+    { id: 1,  current: "310만원",       status: "normal" },
+    { id: 2,  current: "138만원",       status: "warning" },
+    { id: 3,  current: "3.5x",          status: "normal" },
+    { id: 4,  current: "82%",           status: "normal" },
+    { id: 5,  current: "92%",           status: "warning" },
+    { id: 6,  current: "6.7%",          status: "crisis" },
+    { id: 7,  current: "3.2%",          status: "warning" },
+    { id: 8,  current: "2명 (13%)",     status: "warning" },
+    { id: 9,  current: "76%",           status: "best" },
+    { id: 10, current: "63%",           status: "warning" },
+    { id: 11, current: "78%",           status: "normal" },
+    { id: 12, current: "12%",           status: "normal" },
+    { id: 13, current: "39만원/인",     status: "normal" },
+    { id: 14, current: "2.5%",          status: "best" },
+    { id: 15, current: "1.9%",          status: "best" },
+    { id: 16, current: "21.4%",         status: "normal" },
+    { id: 17, current: "34.8만원/h",    status: "crisis" },
+    { id: 18, current: "53점 (추세↑)",  status: "warning" },
+    { id: 19, current: "570%",          status: "normal" },
+    { id: 20, current: "7.1%",          status: "crisis" },
+  ],
+  week: [
+    { id: 1,  current: "1,860만원",     status: "normal" },
+    { id: 2,  current: "140만원",       status: "warning" },
+    { id: 3,  current: "3.6x",          status: "normal" },
+    { id: 4,  current: "79%",           status: "normal" },
+    { id: 5,  current: "90%",           status: "warning" },
+    { id: 6,  current: "7.5%",          status: "crisis" },
+    { id: 7,  current: "4.1%",          status: "crisis" },
+    { id: 8,  current: "8명 (11%)",     status: "warning" },
+    { id: 9,  current: "75%",           status: "best" },
+    { id: 10, current: "62%",           status: "warning" },
+    { id: 11, current: "76%",           status: "warning" },
+    { id: 12, current: "12%",           status: "normal" },
+    { id: 13, current: "233만원/인",    status: "normal" },
+    { id: 14, current: "2.6%",          status: "best" },
+    { id: 15, current: "2.0%",          status: "best" },
+    { id: 16, current: "19.2%",         status: "warning" },
+    { id: 17, current: "32.1만원/h",    status: "crisis" },
+    { id: 18, current: "52점 (추세↑)",  status: "warning" },
+    { id: 19, current: "550%",          status: "normal" },
+    { id: 20, current: "6.5%",          status: "crisis" },
+  ],
+  month: [
+    { id: 1,  current: "7,850만원",     status: "normal" },
+    { id: 2,  current: "141만원",       status: "warning" },
+    { id: 3,  current: "3.7x",          status: "normal" },
+    { id: 4,  current: "78%",           status: "normal" },
+    { id: 5,  current: "88%",           status: "warning" },
+    { id: 6,  current: "8.7%",          status: "crisis" },
+    { id: 7,  current: "4.7%",          status: "crisis" },
+    { id: 8,  current: "22명 (12%)",    status: "warning" },
+    { id: 9,  current: "74%",           status: "best" },
+    { id: 10, current: "61%",           status: "warning" },
+    { id: 11, current: "74%",           status: "warning" },
+    { id: 12, current: "12%",           status: "normal" },
+    { id: 13, current: "981만원/인",    status: "normal" },
+    { id: 14, current: "2.7%",          status: "best" },
+    { id: 15, current: "2.1%",          status: "best" },
+    { id: 16, current: "17.0%",         status: "warning" },
+    { id: 17, current: "31.2만원/h",    status: "crisis" },
+    { id: 18, current: "51점 (추세↑)",  status: "warning" },
+    { id: 19, current: "540%",          status: "normal" },
+    { id: 20, current: "6.2%",          status: "crisis" },
+  ],
+  quarter: [
+    { id: 1,  current: "2억 1,850만원", status: "normal" },
+    { id: 2,  current: "143만원",       status: "warning" },
+    { id: 3,  current: "3.9x",          status: "normal" },
+    { id: 4,  current: "76%",           status: "normal" },
+    { id: 5,  current: "87%",           status: "warning" },
+    { id: 6,  current: "7.8%",          status: "crisis" },
+    { id: 7,  current: "4.3%",          status: "crisis" },
+    { id: 8,  current: "61명 (12%)",    status: "warning" },
+    { id: 9,  current: "72%",           status: "best" },
+    { id: 10, current: "58%",           status: "crisis" },
+    { id: 11, current: "73%",           status: "warning" },
+    { id: 12, current: "12%",           status: "normal" },
+    { id: 13, current: "2,731만원/인",  status: "normal" },
+    { id: 14, current: "2.8%",          status: "best" },
+    { id: 15, current: "2.3%",          status: "best" },
+    { id: 16, current: "16.3%",         status: "warning" },
+    { id: 17, current: "29.5만원/h",    status: "crisis" },
+    { id: 18, current: "49점 (추세↑)",  status: "warning" },
+    { id: 19, current: "520%",          status: "normal" },
+    { id: 20, current: "5.9%",          status: "crisis" },
+  ],
+};
+
 export const TREATMENT_MIX = {
   month: "2026-05",
   total: 78500000,

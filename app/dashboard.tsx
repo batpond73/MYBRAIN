@@ -24,7 +24,10 @@ import {
   FinancePeriodData,
   HR_DATA_BY_PERIOD,
   HrPeriodData,
+  KPI_ALL20_BY_PERIOD,
   KPI_BENCHMARKS,
+  KPI_EXTRA_CRISIS_BY_PERIOD,
+  KPI_TOP3_BY_PERIOD,
   PRESCRIPTIONS,
   VOICE_PARSE_EXAMPLES,
 } from "@/constants/mockData";
@@ -841,17 +844,32 @@ export default function Dashboard() {
   const adj = getAdjustedBenchmarks(doctorProfile);
   const profileCustomized = isProfileCustomized(doctorProfile);
 
+  // period-scoped top3 currents overlay on the canonical benchmark row
+  const top3Snapshot = new Map(KPI_TOP3_BY_PERIOD[period].map((s) => [s.id, s.current]));
   const adjustedTop3 = KPI_BENCHMARKS.top3.map(kpi => {
-    if (kpi.id === "laborCost") return { ...kpi, benchmark: adj.laborCost, benchmarkLabel: `≤ ${adj.laborCost}%` };
-    if (kpi.id === "noShow") return { ...kpi, benchmark: adj.noShow, benchmarkLabel: `≤ ${adj.noShow}%` };
-    if (kpi.id === "caseAcceptance") return { ...kpi, benchmark: adj.caseAcceptance, benchmarkLabel: `≥ ${adj.caseAcceptance}%` };
-    return kpi;
+    const scopedCurrent = top3Snapshot.get(kpi.id) ?? kpi.current;
+    const base = { ...kpi, current: scopedCurrent };
+    if (kpi.id === "laborCost") return { ...base, benchmark: adj.laborCost, benchmarkLabel: `≤ ${adj.laborCost}%` };
+    if (kpi.id === "noShow") return { ...base, benchmark: adj.noShow, benchmarkLabel: `≤ ${adj.noShow}%` };
+    if (kpi.id === "caseAcceptance") return { ...base, benchmark: adj.caseAcceptance, benchmarkLabel: `≥ ${adj.caseAcceptance}%` };
+    return base;
   });
 
+  // period-scoped snapshot merged over canonical 20-KPI rows for the
+  // evidence modal — canonical stays untouched for settings/help pages.
+  const all20Snapshot = new Map(KPI_ALL20_BY_PERIOD[period].map((s) => [s.id, s]));
+  const all20ForPeriod = KPI_BENCHMARKS.all20.map((k) => {
+    const snap = all20Snapshot.get(k.id);
+    return snap ? { ...k, current: snap.current, status: snap.status } : k;
+  });
+
+  const extraByPeriod = KPI_EXTRA_CRISIS_BY_PERIOD[period];
   const adjustedExtraKpis = EXTRA_CRISIS_KPIS.map(kpi => {
-    if (kpi.id === "cancelRate") return { ...kpi, benchmark: adj.cancelRate, benchmarkLabel: `≤ ${adj.cancelRate}%` };
-    if (kpi.id === "uncollected") return { ...kpi, benchmark: adj.uncollected, benchmarkLabel: `≤ ${adj.uncollected}%` };
-    return kpi;
+    const scopedCurrent = extraByPeriod[kpi.id] ?? kpi.current;
+    const base = { ...kpi, current: scopedCurrent };
+    if (kpi.id === "cancelRate") return { ...base, benchmark: adj.cancelRate, benchmarkLabel: `≤ ${adj.cancelRate}%` };
+    if (kpi.id === "uncollected") return { ...base, benchmark: adj.uncollected, benchmarkLabel: `≤ ${adj.uncollected}%` };
+    return base;
   });
 
   const scrollRef = useRef<ScrollView>(null);
@@ -1242,7 +1260,7 @@ export default function Dashboard() {
                 { key: "normal",   label: "✓ 정상",  color: "#33A6FF", bg: "#EBF5FF", border: "#C0DEFF" },
                 { key: "best",     label: "★ 최상",  color: "#00C853", bg: "#EDFFF5", border: "#A7F3C8" },
               ] as const).map(group => {
-                const items = KPI_BENCHMARKS.all20.filter(k => k.status === group.key);
+                const items = all20ForPeriod.filter(k => k.status === group.key);
                 if (items.length === 0) return null;
                 return (
                   <View key={group.key} style={[styles.kpiGroup, { borderColor: group.border, backgroundColor: group.bg }]}>
