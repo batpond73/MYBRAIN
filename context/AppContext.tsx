@@ -80,31 +80,41 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
-  const save = async (newState: AppState) => {
-    setState(newState);
-    try {
-      // hasSeenIntro 포함 전체 저장.
-      await AsyncStorage.setItem("mybrain_state", JSON.stringify(newState));
-    } catch {}
-  };
+  // 상태 변경 시 AsyncStorage에 자동 persist.
+  // 초기 로드 이전엔 스킵해서 defaultState가 저장본을 덮어쓰지 않도록 함.
+  //
+  // 왜 useEffect 기반인가:
+  // 이전엔 각 mutator가 closure의 `state`를 읽어 새 값 계산 + AsyncStorage
+  // 직접 write 하는 방식이었음. 이 방식은 한 tick 안에서 mutator가 연속으로
+  // 호출되면 두 번째가 첫 번째의 in-memory 업데이트를 못 보고 stale closure
+  // 로 덮어써서 마지막 write가 첫 업데이트를 지웠음.
+  //   예) quest/profile.tsx handleComplete에서
+  //       setDoctorProfile({...managementType:"A"}) 직후
+  //       await completeQuest("quest2")를 부르면
+  //       completeQuest가 doctorProfile.managementType=null인 old state로
+  //       AsyncStorage를 덮어써서 managementType이 사라짐
+  // 근본 해결: 모든 mutator를 setState(prev => ...) 함수형으로 바꿔서
+  // React가 순차적으로 compose하게 하고, persist는 최종 state 하나만
+  // 저장하도록 useEffect로 단일화.
+  useEffect(() => {
+    if (!isLoaded) return;
+    AsyncStorage.setItem("mybrain_state", JSON.stringify(state)).catch(() => {});
+  }, [state, isLoaded]);
 
   const login = async (userId: string, clinicName: string) => {
-    await save({ ...state, isAuthenticated: true, userId, clinicName });
+    setState((s) => ({ ...s, isAuthenticated: true, userId, clinicName }));
   };
 
   const logout = async () => {
-    await save({ ...defaultState });
+    setState(defaultState);
   };
 
   const completeQuest = async (quest: "quest1" | "quest2" | "quest3") => {
-    const newState = { ...state, questsCompleted: { ...state.questsCompleted, [quest]: true } };
-    await save(newState);
+    setState((s) => ({ ...s, questsCompleted: { ...s.questsCompleted, [quest]: true } }));
   };
 
   const setDoctorProfile = (profile: Partial<DoctorProfile>) => {
-    const newState = { ...state, doctorProfile: { ...state.doctorProfile, ...profile } };
-    setState(newState);
-    AsyncStorage.setItem("mybrain_state", JSON.stringify(newState)).catch(() => {});
+    setState((s) => ({ ...s, doctorProfile: { ...s.doctorProfile, ...profile } }));
   };
 
   const setPeriod = (period: "today" | "week" | "month" | "quarter") => {
@@ -112,12 +122,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleDarkMode = () => {
-    const newState = { ...state, isDarkMode: !state.isDarkMode };
-    save(newState);
+    setState((s) => ({ ...s, isDarkMode: !s.isDarkMode }));
   };
 
   const markIntroSeen = async () => {
-    await save({ ...state, hasSeenIntro: true });
+    setState((s) => ({ ...s, hasSeenIntro: true }));
   };
 
   const allQuestsCompleted =
