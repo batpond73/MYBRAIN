@@ -76,23 +76,50 @@ export default function QuestEMR() {
       <View style={styles.content}>
         <Feather name="zap" size={40} color="#33A6FF" />
         <Text style={styles.title}>소프트웨어 깨우기</Text>
-        <Text style={styles.subtitle}>사용 중인 EMR · 근태관리 소프트웨어를 선택해주세요.{"\n"}데스크 PC에 에이전트 설치 링크를 발송합니다.</Text>
+        <Text style={styles.subtitle}>사용 중인 EMR · 근태관리 소프트웨어를 모두 선택해주세요.{"\n"}데스크 PC에 에이전트 설치 링크를 발송합니다.</Text>
+
+        {/* 다중 선택 안내 배지 · UX 오해 방지 */}
+        <View style={styles.multiHint}>
+          <Feather name="check-square" size={12} color="#33A6FF" />
+          <Text style={styles.multiHintText}>여러 개 선택할 수 있어요 · 예) 덴트웹 + 캡스</Text>
+        </View>
 
         <View style={styles.emrGrid}>
-          {EMR_OPTIONS.map((emr) => (
-            <TouchableOpacity
-              key={emr.id}
-              style={[styles.emrCard, selected.includes(emr.id) && styles.emrCardSelected, selected.includes(emr.id) && { borderColor: emr.color }]}
-              onPress={() => handleSelect(emr.id)}
-              activeOpacity={0.8}
-            >
-              <View style={[styles.emrDot, { backgroundColor: emr.color }]} />
-              <Text style={[styles.emrName, selected.includes(emr.id) && { color: emr.color }]}>{emr.name}</Text>
-              <Text style={styles.emrDesc}>{emr.desc}</Text>
-              {selected.includes(emr.id) && <Feather name="check-circle" size={16} color={emr.color} style={styles.emrCheck} />}
-            </TouchableOpacity>
-          ))}
+          {EMR_OPTIONS.map((emr) => {
+            const isSelected = selected.includes(emr.id);
+            return (
+              <TouchableOpacity
+                key={emr.id}
+                style={[
+                  styles.emrCard,
+                  isSelected && styles.emrCardSelected,
+                  isSelected && { borderColor: emr.color, backgroundColor: `${emr.color}0D` }, // 8% 채도 배경
+                ]}
+                onPress={() => handleSelect(emr.id)}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.emrDot, { backgroundColor: emr.color }, isSelected && styles.emrDotSelected]} />
+                <Text style={[styles.emrName, isSelected && { color: emr.color }]}>{emr.name}</Text>
+                <Text style={styles.emrDesc}>{emr.desc}</Text>
+                {isSelected && (
+                  <View style={[styles.emrCheckBadge, { backgroundColor: emr.color }]}>
+                    <Feather name="check" size={12} color="#fff" />
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </View>
+
+        {/* 선택된 개수 · 어떤 항목이 선택됐는지 확인 */}
+        {selected.length > 0 && (
+          <View style={styles.selectionSummary}>
+            <Text style={styles.selectionCount}>선택됨 {selected.length}개</Text>
+            <Text style={styles.selectionList}>
+              {selected.map((id) => EMR_OPTIONS.find((e) => e.id === id)?.name).join(" · ")}
+            </Text>
+          </View>
+        )}
 
         <TouchableOpacity
           style={[styles.connectBtn, selected.length === 0 && styles.btnDisabled]}
@@ -101,7 +128,9 @@ export default function QuestEMR() {
           activeOpacity={0.85}
         >
           <Feather name="send" size={18} color="#fff" />
-          <Text style={styles.connectBtnText}>에이전트 설치 SMS 발송</Text>
+          <Text style={styles.connectBtnText}>
+            {selected.length === 0 ? "에이전트 설치 SMS 발송" : `${selected.length}개 항목 SMS 발송`}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -113,14 +142,16 @@ export default function QuestEMR() {
                 <Feather name="smartphone" size={36} color="#33A6FF" />
                 <Text style={styles.modalTitle}>SMS 발송 준비</Text>
                 <Text style={styles.modalDesc}>
-                  원장님의 핸드폰 번호로{"\n"}AGE+ 에이전트 설치 링크를 발송합니다.
+                  원장님의 핸드폰 번호로{"\n"}
+                  선택하신 {selected.length}개 소프트웨어의{"\n"}
+                  AGE+ 에이전트 설치 링크를 발송합니다.
                 </Text>
                 <View style={styles.smsPreview}>
-                  <Text style={styles.smsLabel}>발송 예정 SMS</Text>
+                  <Text style={styles.smsLabel}>발송 예정 SMS · {selected.map((id) => EMR_OPTIONS.find((e) => e.id === id)?.name).join(" + ")}</Text>
                   <Text style={styles.smsText}>
                     [AGE+Brain] 데스크 PC에서 클릭해주세요:{"\n"}
                     https://ageplus.ai/agent/install?clinic=...{"\n"}
-                    (24시간 유효)
+                    (24시간 유효 · 선택하신 {selected.length}개 앱 전체 연동)
                   </Text>
                 </View>
                 <TouchableOpacity style={styles.sendBtn} onPress={handleSendSMS} disabled={loading} activeOpacity={0.85}>
@@ -178,9 +209,50 @@ const styles = StyleSheet.create({
   },
   emrCardSelected: { backgroundColor: "#F8FBFF" },
   emrDot: { width: 12, height: 12, borderRadius: 6 },
+  // 선택 시 dot 크기 살짝 키우고 링 효과 · 색점이 여전히 카드 정체성이라 유지
+  emrDotSelected: { width: 14, height: 14, borderRadius: 7 },
   emrName: { fontSize: 16, fontWeight: "700" as const, color: "#00153D" },
   emrDesc: { fontSize: 11, color: "#64748B" },
   emrCheck: { position: "absolute", top: 10, right: 10 },
+  // 선택 뱃지 · 우상단에 solid 원 + 화이트 체크 · 이전 line-only check-circle보다 뚜렷
+  emrCheckBadge: {
+    position: "absolute" as const,
+    top: 10,
+    right: 10,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  // 다중 선택 안내 배지 · 카드 위에 위치 · UX 오해 방지
+  multiHint: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 6,
+    backgroundColor: "#EBF5FF",
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  multiHintText: { fontSize: 12, color: "#33A6FF", fontWeight: "600" as const },
+  // 선택된 항목 요약 · 카드 아래 · 어떤 걸 골랐는지 재확인 UX
+  selectionSummary: {
+    width: "100%" as const,
+    backgroundColor: "#F0F9FF",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#BAE6FD",
+    padding: 12,
+    gap: 4,
+  },
+  selectionCount: { fontSize: 11, color: "#33A6FF", fontWeight: "700" as const, letterSpacing: 0.5 },
+  selectionList: { fontSize: 14, color: "#00153D", fontWeight: "600" as const },
   connectBtn: {
     backgroundColor: "#33A6FF",
     borderRadius: 16,
