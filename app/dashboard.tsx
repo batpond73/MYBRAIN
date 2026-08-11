@@ -40,7 +40,7 @@ import { RetentionTrio } from "@/components/dashboard/RetentionTrio";
 import { ScoreExplainerModal } from "@/components/dashboard/ScoreExplainerModal";
 import { SectionHeader } from "@/components/dashboard/SectionHeader";
 import { UncollectedFunnel } from "@/components/dashboard/UncollectedFunnel";
-import { computeAxisScores, pickRootCause } from "@/lib/financialInsights";
+import { computeAxisScores, generateRootCauseReason, pickRootCause } from "@/lib/financialInsights";
 import { KpiPrescription, getKpiPrescription } from "@/lib/kpiPrescriptions";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -329,6 +329,12 @@ export default function Dashboard() {
     ? KPI_BENCHMARKS.all20.find((k) => k.id === rootCause.kpiId) ?? null
     : null;
   const rootCauseSnap = rootCause ? all20Snap.find((s) => s.id === rootCause.kpiId) ?? null : null;
+  // rootCause 이유 텍스트는 계산 결과에서 동적 생성 (근본 · mockData 하드코딩 제거).
+  // 이전에는 mockData.rootCauseReason이 pickRootCause 계산과 다른 KPI를 가리켜
+  // 헤더의 이름·값·이유가 서로 다른 KPI로 나오는 3원 어긋남 버그가 있었음.
+  const rootCauseReasonText = rootCause && rootCauseSnap
+    ? generateRootCauseReason(rootCause, { current: rootCauseSnap.current, status: rootCauseSnap.status })
+    : "";
 
   // 재무 심층 카드가 처방 modal에 넘길 kpi 메타. modal은 numeric
   // current 및 benchmark를 요구하므로 finance 데이터를 numeric shape로 변환.
@@ -682,7 +688,7 @@ export default function Dashboard() {
               rootCause={rootCause}
               rootCauseName={rootCauseCanonical?.name ?? null}
               rootCauseCurrent={rootCauseSnap?.current ?? null}
-              rootCauseReason={finance.rootCauseReason}
+              rootCauseReason={rootCauseReasonText}
               onPressOverall={() => openKpiPrescription("overall")}
               onPressRootCause={() => rootCause && openKpiPrescription(rootCause.kpiKey)}
               onPressExplainScore={() => setScoreExplainerOpen(true)}

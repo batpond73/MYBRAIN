@@ -108,6 +108,12 @@ export type RootCause = {
  * @param snapshots         현 period의 20개 KPI 스냅샷 (status 필요)
  * @param canonicalAll20    KPI_BENCHMARKS.all20 (upstreamKpiKeys 참조)
  * @param keyMap            id → key 매핑 (dashboard의 ALL20_KEY_MAP)
+ *
+ * 필터 규약 (근본 픽스):
+ *  - 하류(downstream)가 crisis/warning일 때만 카운트 대상
+ *  - 상류(upstream) 자신도 crisis/warning이어야 후보 (best인데 하류에 문제라면
+ *    그 상류는 진짜 원인이 아니라 다른 요인이 있는 것)
+ *  - keyMap에서 못 찾은 상류 key는 후보 배제 (999로 밀어넣던 우회 제거)
  */
 export function pickRootCause(
   snapshots: Kpi20Snapshot[],
@@ -119,24 +125,28 @@ export function pickRootCause(
     const st = statusById.get(id);
     return st === "crisis" || st === "warning";
   };
+  // key → id 역인덱스 (매 후보마다 keyMap 전탐색 방지 · id=999 fallback도 제거)
+  const idByKey = new Map<string, number>();
+  for (const [idStr, key] of Object.entries(keyMap)) idByKey.set(key, Number(idStr));
 
   // 상류 → 하류 count 집계 (하류가 unhealthy일 때만 카운트)
-  const upstreamCount = new Map<string, string[]>(); // key: upstream key, val: downstream keys
+  const upstreamCount = new Map<string, string[]>();
   for (const kpi of canonicalAll20) {
     if (!isUnhealthy(kpi.id)) continue;
     if (!kpi.upstreamKpiKeys || kpi.upstreamKpiKeys.length === 0) continue;
-    const downstreamKey = kpi.key;
     for (const upKey of kpi.upstreamKpiKeys) {
       const list = upstreamCount.get(upKey) ?? [];
-      list.push(downstreamKey);
+      list.push(kpi.key);
       upstreamCount.set(upKey, list);
     }
   }
 
-  // count 가장 큰 상류 지표 선정 (동점 시 id 낮은 것)
+  // 후보 필터 · 정렬
   let best: { key: string; downs: string[]; id: number } | null = null;
   for (const [key, downs] of upstreamCount.entries()) {
-    const id = Number(Object.entries(keyMap).find(([, v]) => v === key)?.[0] ?? 999);
+    const id = idByKey.get(key);
+    if (id === undefined) continue;       // keyMap 미등록 상류 배제 (id=999 우회 제거)
+    if (!isUnhealthy(id)) continue;       // 상류 자신이 healthy면 진짜 원인이 아님
     if (
       !best ||
       downs.length > best.downs.length ||
@@ -153,4 +163,47 @@ export function pickRootCause(
     downstreamCount: best.downs.length,
     downstreamKeys: best.downs,
   };
+}
+
+// KPI 한글 이름 매핑 (rootCause 이유 텍스트 자동 생성용).
+// dashboard의 KPI_BENCHMARKS.all20에서 조회 가능하지만, 상류 지표는 all20이 아닌
+// 것도 있어(예: laborCost) 별도 fallback 사전을 둔다.
+const KPI_KOR_NAME: Record<string, string> = {
+  monthlyRevenue: "월 매출", patientLtv: "환자 LTV", ltvCac: "LTV:CAC",
+  chairUtil: "체어 가동률", appointmentRate: "예약 충족률", cancelRate: "당일 취소율",
+  uncollected: "미수금", newPatients: "신환 수", returnRate: "재내원율",
+  recallRate: "리콜 성공률", treatComplete: "진료 완료율", staffTurnover: "스태프 이직률",
+  staffProductivity: "스태프 생산성", materialCost: "재료비", labFee: "기공료",
+  netProfit: "순이익률", hourlyProd: "시간당 생산성", nps: "환자 NPS",
+  marketingROI: "마케팅 ROI", preventiveRecall: "예방·리콜 매출 비중",
+  laborCost: "인건비", caseAcceptance: "상담 동의율", noShow: "노쇼율",
+  waitTime: "대기시간", fixedCost: "고정비",
+};
+
+const STATUS_KOR: Record<Kpi20Snapshot["status"], string> = {
+  crisis: "위기", warning: "경고", normal: "정상", best: "우수",
+};
+
+/**
+ * rootCause 이유 텍스트 자동 생성 · 계산 결과와 항상 정합.
+ * 하드코딩 mockData.rootCauseReason 대신 이 함수를 쓴다.
+ */
+export function generateRootCauseReason(
+  rootCause: RootCause,
+  rootSnap: { current: string; status: Kpi20Snapshot["status"] },
+): string {
+  const name = KPI_KOR_NAME[rootCause.kpiKey] ?? rootCause.kpiKey;
+  const st = STATUS_KOR[rootSnap.status];
+  const downNames = rootCause.downstreamKeys
+    .map((k) => KPI_KOR_NAME[k] ?? k)
+    .slice(0, 4);
+  const listStr = downNames.join(" · ");
+  const more = rootCause.downstreamKeys.length > downNames.length
+    ? ` 외 ${rootCause.downstreamKeys.length - downNames.length}건`
+    : "";
+  return (
+    `${name} ${rootSnap.current}(${st}) 상태가 지금 위기·경고인 ${rootCause.downstreamCount}개 지표(${listStr}${more})의 상류. ` +
+    `여기부터 손대면 이 지표들이 동시에 회복됩니다.\n` +
+    `(이 하나만 개선해도 아래 ${rootCause.downstreamCount}개가 함께 좋아진다는 뜻이에요.)`
+  );
 }
