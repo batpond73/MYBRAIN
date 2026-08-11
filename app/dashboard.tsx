@@ -374,7 +374,25 @@ function DashboardInner() {
   const [prescriptionKpi, setPrescriptionKpi] = useState<string | null>(null);
   const prescriptionAnim = useRef(new Animated.Value(0)).current;
 
+  // KPI 메타 통합 조회 · 3원 fallback을 하나의 함수로 캡슐화 (근본 픽스).
+  // overall과 rootCause 특수 키는 별도 처리 · 그 외는 이 하나로 조회.
+  type KpiMeta = { name: string; unit: string; current: number | string; benchmark: number; direction: string; benchmarkLabel: string };
+  const findKpiMeta = (id: string): KpiMeta | undefined => {
+    return (
+      adjustedTop3.find((k) => k.id === id) ??
+      adjustedExtraKpis.find((k) => k.id === id) ??
+      FINANCE_KPIS.find((k) => k.id === id)
+    );
+  };
+
   const openKpiPrescription = (id: string) => {
+    // 'overall' 특수 키 외에는 메타·처방이 실제로 있을 때만 모달 오픈 (근본 · 이전엔
+    // undefined 유령 모달이 뜨는 경우 있었음)
+    if (id !== "overall") {
+      const meta = findKpiMeta(id);
+      const rx = getKpiPrescription(id, period);
+      if (!meta || !rx) return;
+    }
     setPrescriptionKpi(id);
     Animated.spring(prescriptionAnim, { toValue: 1, useNativeDriver: Platform.OS !== "web", tension: 65, friction: 11 }).start();
   };
@@ -958,12 +976,10 @@ function DashboardInner() {
         const rx: KpiPrescription | undefined = isOverall
           ? finance.overallPrescription
           : getKpiPrescription(prescriptionKpi, period);
-        const kpi: { name: string; unit: string; current: number | string; benchmark: number; direction: string; benchmarkLabel: string } | undefined =
+        const kpi: KpiMeta | undefined =
           isOverall
             ? { name: "20개 지표 통합 처방", unit: "", current: `${axisScores.profitability}/${axisScores.retention}/${axisScores.risk}`, benchmark: 100, direction: "higher", benchmarkLabel: "3축 스코어" }
-            : (adjustedTop3.find(k => k.id === prescriptionKpi)
-               ?? adjustedExtraKpis.find(k => k.id === prescriptionKpi)
-               ?? FINANCE_KPIS.find(k => k.id === prescriptionKpi));
+            : findKpiMeta(prescriptionKpi);
         // period notice badge 제거: KPI_PRESCRIPTIONS_BY_PERIOD가 4× 확장되어 이제 근본 대응.
         // (구조적 조언은 month → 다른 period에도 그대로 유효한 KPI는 fallback으로 통과.)
         return (

@@ -758,6 +758,16 @@ export const KPI_EXTRA_CRISIS_BY_PERIOD: Record<PeriodKey, Record<string, number
   quarter: { cancelRate: 7.8, uncollected: 4.3 },
 };
 
+// TOP3 설계 의도 (근본 명시):
+//  - 이 목록은 ALL20의 crisis 자동 랭킹이 아니라 "원장님이 매일 봐야 하는
+//    핵심 3개" 로 프로덕트에서 hand-picked (laborCost · noShow · caseAcceptance).
+//  - 매일 다른 지표가 뜨면 원장님의 시선 고정 대상이 흔들려서 실장님과 논의할
+//    반복 안건이 없어짐 → 의도적으로 3개 고정.
+//  - ALL20의 crisis 상태 지표들은 별도로 KPI 확장 목록·rootCause·재무 심층 카드
+//    에서 노출됨. 이 TOP3 3개는 그와 무관한 "상시 스캔 대상" 역할.
+//  - 만약 나중에 "TOP3도 자동 랭킹"으로 프로덕트 결정이 바뀌면 이 상수를 함수형
+//    으로 바꾸고 KPI_ALL20_BY_PERIOD에서 crisis+warning 상위 3개를 자동 선정하면
+//    됨. 지금은 hand-picked 유지.
 export const KPI_TOP3_BY_PERIOD: Record<PeriodKey, KpiTop3Snapshot[]> = {
   today: [
     { id: "laborCost",      current: 30.0 },
