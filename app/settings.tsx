@@ -3,7 +3,7 @@ import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { Redirect, router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Animated, LayoutAnimation, PanResponder, Platform, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, UIManager, View } from "react-native";
+import { Alert, Animated, LayoutAnimation, Modal, PanResponder, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, UIManager, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HomeFab } from "@/components/HomeFab";
@@ -79,9 +79,13 @@ export default function Settings() {
 
 function SettingsInner() {
   const insets = useSafeAreaInsets();
-  const { clinicName, userId, questsCompleted, doctorProfile, setDoctorProfile, logout } = useAppContext();
+  const { clinicName, userId, questsCompleted, doctorProfile, setDoctorProfile, setClinicName, logout } = useAppContext();
   const [notify, setNotify] = useState(true);
   const [expandedKpiId, setExpandedKpiId] = useState<number | null>(null);
+  // 병원명 편집 모달 상태 (근본 · 이전엔 로그인 시 하드코딩된 병원명 저장되어
+  // 원장님이 자기 병원명을 못 넣는 상태였음)
+  const [clinicEditOpen, setClinicEditOpen] = useState(false);
+  const [clinicDraft, setClinicDraft] = useState(clinicName);
 
   const toggleKpi = async (id: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -170,18 +174,54 @@ function SettingsInner() {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
 
-        {/* 병원 프로필 카드 */}
-        <View style={styles.profileCard}>
+        {/* 병원 프로필 카드 · 병원명은 탭해서 편집 가능 (근본) */}
+        <TouchableOpacity
+          style={styles.profileCard}
+          activeOpacity={0.8}
+          onPress={() => { setClinicDraft(clinicName); setClinicEditOpen(true); }}
+        >
           <Image source={require("@/assets/images/logo.png")} style={styles.profileLogo} contentFit="contain" />
           <View style={styles.profileInfo}>
-            <Text style={styles.profileClinic}>{clinicName || "병원명 미설정"}</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <Text style={styles.profileClinic}>{clinicName || "병원명 미설정"}</Text>
+              <Feather name="edit-2" size={13} color="#33A6FF" />
+            </View>
             <Text style={styles.profileEmail}>{userId || "아이디 미설정"}</Text>
             <View style={styles.profileBadge}>
               <Feather name="shield" size={11} color="#33A6FF" />
               <Text style={styles.profileBadgeText}>원장님 전용 AI 관제탑</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
+
+        {/* 병원명 편집 모달 */}
+        <Modal visible={clinicEditOpen} transparent animationType="fade" onRequestClose={() => setClinicEditOpen(false)}>
+          <View style={styles.clinicModalOverlay}>
+            <View style={styles.clinicModalBox}>
+              <Text style={styles.clinicModalTitle}>병원명 편집</Text>
+              <Text style={styles.clinicModalDesc}>대시보드·설정에 표시될 병원 이름을 입력해주세요.</Text>
+              <TextInput
+                value={clinicDraft}
+                onChangeText={setClinicDraft}
+                placeholder="예) 서울강남치과의원"
+                placeholderTextColor="#94A3B8"
+                style={styles.clinicModalInput}
+                autoFocus
+              />
+              <View style={styles.clinicModalRow}>
+                <TouchableOpacity style={styles.clinicModalCancel} onPress={() => setClinicEditOpen(false)}>
+                  <Text style={styles.clinicModalCancelText}>취소</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.clinicModalSave}
+                  onPress={() => { setClinicName(clinicDraft.trim()); setClinicEditOpen(false); }}
+                >
+                  <Text style={styles.clinicModalSaveText}>저장</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
         {/* 관제탑 3단계 — 탭해서 바로 수정 */}
         <Text style={styles.sectionLabel}>관제탑 3단계 설정</Text>
@@ -470,6 +510,20 @@ const styles = StyleSheet.create({
   profileEmail: { fontSize: 13, color: "#64748B" },
   profileBadge: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 4 },
   profileBadgeText: { fontSize: 11, color: "#33A6FF", fontWeight: "600" as const },
+  // 병원명 편집 모달
+  clinicModalOverlay: { flex: 1, backgroundColor: "#00000055", alignItems: "center" as const, justifyContent: "center" as const, padding: 24 },
+  clinicModalBox: { width: "100%" as const, maxWidth: 400, backgroundColor: "#FFFFFF", borderRadius: 18, padding: 22, gap: 12 },
+  clinicModalTitle: { fontSize: 18, fontWeight: "800" as const, color: "#00153D" },
+  clinicModalDesc: { fontSize: 13, color: "#64748B", lineHeight: 19 },
+  clinicModalInput: {
+    borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
+    fontSize: 15, color: "#00153D", marginTop: 4,
+  },
+  clinicModalRow: { flexDirection: "row" as const, gap: 8, marginTop: 4 },
+  clinicModalCancel: { flex: 1, backgroundColor: "#F1F5F9", borderRadius: 12, paddingVertical: 12, alignItems: "center" as const },
+  clinicModalCancelText: { fontSize: 14, color: "#64748B", fontWeight: "700" as const },
+  clinicModalSave: { flex: 1, backgroundColor: "#33A6FF", borderRadius: 12, paddingVertical: 12, alignItems: "center" as const },
+  clinicModalSaveText: { fontSize: 14, color: "#FFFFFF", fontWeight: "700" as const },
 
   sectionRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 8, marginBottom: 4, paddingHorizontal: 4 },
   sectionLabel: { fontSize: 12, fontWeight: "700" as const, color: "#94A3B8", letterSpacing: 0.8, marginTop: 8, marginBottom: 4, paddingHorizontal: 4 },

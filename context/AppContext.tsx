@@ -14,6 +14,10 @@ interface AppState {
   userId: string;
   clinicName: string;
   clinicTenureYears: number;
+  // isDemoMode: 실 EMR·재무 데이터 연동 이전 상태를 명시. 앱 전체가 mockData
+  // 기반이므로 지금은 로그인 즉시 true. 향후 실 데이터 연동 시 false로 flip.
+  // 대시보드 상단·설정 화면 등에서 "데모 데이터로 표시 중" 배지 노출 근거.
+  isDemoMode: boolean;
   questsCompleted: { quest1: boolean; quest2: boolean; quest3: boolean };
   doctorProfile: DoctorProfile;
   period: "today" | "week" | "month" | "quarter";
@@ -22,10 +26,12 @@ interface AppState {
 
 interface AppContextType extends AppState {
   isLoaded: boolean;
-  login: (userId: string, clinicName: string) => Promise<void>;
+  // clinicName은 이제 optional · 명시 안 하면 기존 값 유지 (하드코딩 방지).
+  login: (userId: string, clinicName?: string) => Promise<void>;
   logout: () => Promise<void>;
   completeQuest: (quest: "quest1" | "quest2" | "quest3") => Promise<void>;
   setDoctorProfile: (profile: Partial<DoctorProfile>) => void;
+  setClinicName: (name: string) => void;
   setPeriod: (period: "today" | "week" | "month" | "quarter") => void;
   toggleDarkMode: () => void;
   markIntroSeen: () => Promise<void>;
@@ -38,6 +44,7 @@ const defaultState: AppState = {
   userId: "",
   clinicName: "",
   clinicTenureYears: 3, // v0.4: REL 판정용 개원 연차 (0=신규, 3=안정기, 7+=성숙)
+  isDemoMode: true,     // 실 EMR 연동 이전엔 항상 true
   questsCompleted: { quest1: false, quest2: false, quest3: false },
   doctorProfile: { speedSlider: 0.5, communicationSlider: 0.5, chairSlider: 0.5, managementType: null },
   period: "today",
@@ -51,6 +58,7 @@ const AppContext = createContext<AppContextType>({
   logout: async () => {},
   completeQuest: async () => {},
   setDoctorProfile: () => {},
+  setClinicName: () => {},
   setPeriod: () => {},
   toggleDarkMode: () => {},
   markIntroSeen: async () => {},
@@ -101,8 +109,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.setItem("mybrain_state", JSON.stringify(state)).catch(() => {});
   }, [state, isLoaded]);
 
-  const login = async (userId: string, clinicName: string) => {
-    setState((s) => ({ ...s, isAuthenticated: true, userId, clinicName }));
+  // clinicName 규약 (근본):
+  //  - 명시적으로 넘긴 값이 있고 비어있지 않으면 그 값을 저장
+  //  - 명시 안 하거나 빈 문자열이면 기존 clinicName 유지 (하드코딩 방지)
+  //  - 이전엔 login.tsx가 "서울나눔치과의원" 하드코딩을 넘겨 어떤 원장님이
+  //    로그인해도 대시보드에 특정 병원명이 표시되는 버그 있었음
+  const login = async (userId: string, clinicName?: string) => {
+    setState((s) => ({
+      ...s,
+      isAuthenticated: true,
+      userId,
+      clinicName: clinicName && clinicName.trim().length > 0 ? clinicName : s.clinicName,
+    }));
+  };
+
+  const setClinicName = (name: string) => {
+    setState((s) => ({ ...s, clinicName: name }));
   };
 
   const logout = async () => {
@@ -134,7 +156,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ ...state, isLoaded, login, logout, completeQuest, setDoctorProfile, setPeriod, toggleDarkMode, markIntroSeen, allQuestsCompleted }}
+      value={{ ...state, isLoaded, login, logout, completeQuest, setDoctorProfile, setClinicName, setPeriod, toggleDarkMode, markIntroSeen, allQuestsCompleted }}
     >
       {children}
     </AppContext.Provider>

@@ -36,20 +36,21 @@ export default function SignUpScreen() {
     setError("");
     setLoading(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login(userId, "");
+    // sign-up 흐름에서는 clinicName을 아직 안 받음 · 설정 화면에서 입력하도록 안내
+    await login(userId);
     setLoading(false);
     router.replace(afterLogin());
   };
 
   const handleAppleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login("apple_user", "");
+    await login("apple_user");
     router.replace(afterLogin());
   };
 
   const handleGoogleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login("google_user", "");
+    await login("google_user");
     router.replace(afterLogin());
   };
 

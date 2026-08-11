@@ -287,7 +287,7 @@ export default function Dashboard() {
 
 function DashboardInner() {
   const insets = useSafeAreaInsets();
-  const { period, setPeriod, clinicName, logout, doctorProfile } = useAppContext();
+  const { period, setPeriod, clinicName, logout, doctorProfile, isDemoMode } = useAppContext();
 
   // 원장 동기화 데이터 → KPI 기준값 자동 조정
   const adj = getAdjustedBenchmarks(doctorProfile);
@@ -474,7 +474,7 @@ function DashboardInner() {
       <View style={styles.topBar}>
         <Image source={require("@/assets/images/logo.png")} style={styles.headerLogo} contentFit="contain" />
         <View style={styles.headerCenter}>
-          <Text style={styles.headerSub}>{clinicName}</Text>
+          <Text style={styles.headerSub}>{clinicName || "병원명 미설정"}</Text>
         </View>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={() => router.push("/daily-receipt")} style={styles.headerBtn}>
@@ -485,6 +485,22 @@ function DashboardInner() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* 데모 배지 · 실 EMR 연동 이전엔 이 상태 명시 (근본 · 이전엔 help.tsx가
+         약속했으나 실제로는 미구현 상태였음) */}
+      {isDemoMode && (
+        <TouchableOpacity
+          style={styles.demoBadge}
+          onPress={() => router.push("/settings" as any)}
+          activeOpacity={0.85}
+        >
+          <Feather name="info" size={12} color="#8B5CF6" />
+          <Text style={styles.demoBadgeText}>
+            데모 데이터로 표시 중 · 실 EMR 연동 요청은 설정에서
+          </Text>
+          <Feather name="chevron-right" size={12} color="#8B5CF6" />
+        </TouchableOpacity>
+      )}
 
       {/* Period Filter */}
       <View style={styles.periodRow}>
@@ -1092,6 +1108,22 @@ const styles = StyleSheet.create({
   headerSub: { fontSize: 11, color: "#64748B" },
   headerActions: { flexDirection: "row", alignItems: "center", gap: 4 },
   headerBtn: { padding: 8 },
+  // 데모 배지 · 실 EMR 연동 이전 상태 명시. 탭 시 설정으로 이동.
+  demoBadge: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    gap: 6,
+    backgroundColor: "#F5F3FF",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginHorizontal: 16,
+    marginBottom: 6,
+    borderWidth: 1,
+    borderColor: "#EDE9FE",
+  },
+  demoBadgeText: { fontSize: 11, color: "#8B5CF6", fontWeight: "700" as const, flexShrink: 1 },
   periodRow: { flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, gap: 8, backgroundColor: "#FFFFFF" },
   periodBtn: { flex: 1, paddingVertical: 7, alignItems: "center", borderRadius: 10, backgroundColor: "#F1F5F9" },
   periodBtnActive: { backgroundColor: "#EBF5FF", borderWidth: 1, borderColor: "#C0DEFF" },

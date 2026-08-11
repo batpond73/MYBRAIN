@@ -36,20 +36,21 @@ export default function LoginScreen() {
     setError("");
     setLoading(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login(userId, "서울나눔치과의원");
+    // clinicName은 명시하지 않음 · 이전 세션 값 유지 · 최초라면 설정에서 입력
+    await login(userId);
     setLoading(false);
     router.replace(afterLogin());
   };
 
   const handleAppleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login("apple_user", "서울나눔치과의원");
+    await login("apple_user");
     router.replace(afterLogin());
   };
 
   const handleGoogleMock = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await login("google_user", "서울나눔치과의원");
+    await login("google_user");
     router.replace(afterLogin());
   };
 
