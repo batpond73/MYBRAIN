@@ -121,10 +121,13 @@ function DailyReceiptInner() {
 
   const handleFilePicker = async () => {
     setSheetOpen(false);
+    // 근본 픽스 · expo-document-picker 현행 API는 { canceled, assets } 형태.
+    // 이전엔 `result.type === "success"` 죽은 API로 파일 첨부가 조용히 무반응이었음.
     const result = await DocumentPicker.getDocumentAsync({ type: "*/*", copyToCacheDirectory: true });
-    if (result.type === "success") {
-      addReceipt(result.uri, result.name, false);
-    }
+    if (result.canceled) return;
+    const asset = result.assets?.[0];
+    if (!asset) return;
+    addReceipt(asset.uri, asset.name ?? "문서", false);
   };
 
   const handleGetPrescription = async () => {

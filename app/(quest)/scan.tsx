@@ -161,10 +161,15 @@ export default function QuestScan() {
   const handleFilePicker = async () => {
     closeSheet();
     await delay(350);
+    // 근본 픽스 · expo-document-picker 현행 API는 { canceled, assets } 형태.
+    // 이전엔 `result.type === "success"` 죽은 API로 파일 첨부가 조용히 무반응이었음
+    // (result.type이 undefined이므로 성공 경로 절대 미실행). 카메라·앨범 브랜치는
+    // 이미 신규 API로 마이그레이션됐는데 파일 첨부만 남아있던 상태.
     const result = await DocumentPicker.getDocumentAsync({ type: "*/*", copyToCacheDirectory: true });
-    if (result.type === "success") {
-      processFile(result.uri, result.name);
-    }
+    if (result.canceled) return;
+    const asset = result.assets?.[0];
+    if (!asset) return;
+    processFile(asset.uri, asset.name ?? "문서");
   };
 
   const handleDemoScan = () => {
