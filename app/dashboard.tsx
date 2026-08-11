@@ -3,7 +3,7 @@ import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -272,9 +272,22 @@ function DualAxisChart({ chartData }: { chartData: { time: string; waitMin: numb
   );
 }
 
+// Auth gate wrapper · 다른 5개 화면(settings/history/help/daily-receipt/(tabs)/index)과 규약 통일.
+// 이전엔 dashboard만 useEffect에서 redirect 처리해 AsyncStorage restore 이전에
+// defaultState(isAuthenticated=false)로 순간 렌더링되는 우회 상태였음. 근본 픽스:
+// (1) isLoaded=false → null 반환 (Root Layout mount 완료 대기)
+// (2) 인증·intro 게이트를 render 시점에 · useEffect 아님
 export default function Dashboard() {
+  const { isLoaded, isAuthenticated, hasSeenIntro } = useAppContext();
+  if (!isLoaded) return null;
+  if (!hasSeenIntro) return <Redirect href="/intro" />;
+  if (!isAuthenticated) return <Redirect href="/(auth)/sign-up" />;
+  return <DashboardInner />;
+}
+
+function DashboardInner() {
   const insets = useSafeAreaInsets();
-  const { period, setPeriod, clinicName, logout, isAuthenticated, hasSeenIntro, doctorProfile } = useAppContext();
+  const { period, setPeriod, clinicName, logout, doctorProfile } = useAppContext();
 
   // 원장 동기화 데이터 → KPI 기준값 자동 조정
   const adj = getAdjustedBenchmarks(doctorProfile);
@@ -310,11 +323,7 @@ export default function Dashboard() {
 
   const scrollRef = useRef<ScrollView>(null);
 
-  useEffect(() => {
-    if (!hasSeenIntro || !isAuthenticated) {
-      router.replace("/intro");
-    }
-  }, [hasSeenIntro, isAuthenticated]);
+  // 인증·intro 리다이렉트는 상위 wrapper(Dashboard)에서 처리 · 여기서는 정상 사용자만.
 
   // Period-scoped mock data — swaps in real time when the user taps
   // 오늘/이번 주/이번 달/분기 in the top filter row.

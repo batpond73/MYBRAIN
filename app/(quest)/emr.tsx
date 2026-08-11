@@ -43,9 +43,13 @@ export default function QuestEMR() {
   };
 
   const handleSendSMS = async () => {
+    // 현 mock 구현: 실제 SMS 발송·데스크 PC 에이전트 설치·자동 연동 파이프라인이
+    // 아직 붙어있지 않다. 이전엔 "발송 완료 · 자동 연동됩니다" 문구로 이미 된 것처럼
+    // 표시했으나 원장님에게 허위 정보 · 근본 픽스로 (a) 로딩 시뮬레이션 짧게 유지 +
+    // (b) 완료 화면 문구를 "요청 접수"로 변경 + (c) "관리자 확인 후 연동" 명시.
     setLoading(true);
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setTimeout(() => { setLoading(false); setDone(true); }, 2000);
+    setTimeout(() => { setLoading(false); setDone(true); }, 1200);
   };
 
   const handleComplete = async () => {
@@ -75,8 +79,8 @@ export default function QuestEMR() {
 
       <View style={styles.content}>
         <Feather name="zap" size={40} color="#33A6FF" />
-        <Text style={styles.title}>소프트웨어 깨우기</Text>
-        <Text style={styles.subtitle}>사용 중인 EMR · 근태관리 소프트웨어를 모두 선택해주세요.{"\n"}데스크 PC에 에이전트 설치 링크를 발송합니다.</Text>
+        <Text style={styles.title}>소프트웨어 알려주기</Text>
+        <Text style={styles.subtitle}>사용 중인 EMR · 근태관리 소프트웨어를 모두 선택해주세요.{"\n"}연동 요청을 접수하고 관리자 확인 후 진행됩니다.</Text>
 
         {/* 다중 선택 안내 배지 · UX 오해 방지 */}
         <View style={styles.multiHint}>
@@ -129,7 +133,7 @@ export default function QuestEMR() {
         >
           <Feather name="send" size={18} color="#fff" />
           <Text style={styles.connectBtnText}>
-            {selected.length === 0 ? "에이전트 설치 SMS 발송" : `${selected.length}개 항목 SMS 발송`}
+            {selected.length === 0 ? "연동 요청 접수" : `${selected.length}개 항목 연동 요청`}
           </Text>
         </TouchableOpacity>
       </View>
@@ -140,22 +144,22 @@ export default function QuestEMR() {
             {!done ? (
               <>
                 <Feather name="smartphone" size={36} color="#33A6FF" />
-                <Text style={styles.modalTitle}>SMS 발송 준비</Text>
+                <Text style={styles.modalTitle}>연동 요청 준비</Text>
                 <Text style={styles.modalDesc}>
-                  원장님의 핸드폰 번호로{"\n"}
-                  선택하신 {selected.length}개 소프트웨어의{"\n"}
-                  AGE+ 에이전트 설치 링크를 발송합니다.
+                  선택하신 {selected.length}개 소프트웨어에 대해{"\n"}
+                  연동 요청을 접수합니다.{"\n"}
+                  실제 에이전트 설치·데이터 연동은 관리자 확인 후 진행됩니다.
                 </Text>
                 <View style={styles.smsPreview}>
-                  <Text style={styles.smsLabel}>발송 예정 SMS · {selected.map((id) => EMR_OPTIONS.find((e) => e.id === id)?.name).join(" + ")}</Text>
+                  <Text style={styles.smsLabel}>요청 접수 대상 · {selected.map((id) => EMR_OPTIONS.find((e) => e.id === id)?.name).join(" + ")}</Text>
                   <Text style={styles.smsText}>
-                    [AGE+Brain] 데스크 PC에서 클릭해주세요:{"\n"}
-                    https://ageplus.ai/agent/install?clinic=...{"\n"}
-                    (24시간 유효 · 선택하신 {selected.length}개 앱 전체 연동)
+                    관리자가 병원과 확인 후{"\n"}
+                    데스크 PC 에이전트 설치 안내를 드립니다.{"\n"}
+                    (베타 · 일반적으로 1~3영업일 소요)
                   </Text>
                 </View>
                 <TouchableOpacity style={styles.sendBtn} onPress={handleSendSMS} disabled={loading} activeOpacity={0.85}>
-                  {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.sendBtnText}>발송하기</Text>}
+                  {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.sendBtnText}>연동 요청 접수</Text>}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setShowModal(false)} style={styles.cancelBtn}>
                   <Text style={styles.cancelText}>취소</Text>
@@ -166,10 +170,15 @@ export default function QuestEMR() {
                 <View style={styles.successIcon}>
                   <Feather name="check" size={32} color="#00C853" />
                 </View>
-                <Text style={styles.modalTitle}>SMS 발송 완료!</Text>
-                <Text style={styles.modalDesc}>데스크 PC에 설치 후 자동 연동됩니다.</Text>
+                <Text style={styles.modalTitle}>요청 접수 완료</Text>
+                <Text style={styles.modalDesc}>
+                  선택하신 {selected.length}개 소프트웨어 연동 요청이 접수됐어요.{"\n"}
+                  관리자 확인 후 데스크 PC 설치 안내를 드립니다.{"\n"}
+                  {"\n"}
+                  지금은 데모 데이터로 대시보드를 미리 둘러보실 수 있어요.
+                </Text>
                 <TouchableOpacity style={[styles.sendBtn, { backgroundColor: "#00C853" }]} onPress={handleComplete} activeOpacity={0.85}>
-                  <Text style={styles.sendBtnText}>퀘스트 완료</Text>
+                  <Text style={styles.sendBtnText}>대시보드 미리보기</Text>
                 </TouchableOpacity>
               </>
             )}
