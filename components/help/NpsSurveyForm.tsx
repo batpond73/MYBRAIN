@@ -106,6 +106,10 @@ export function NpsSurveyForm({ mode = "demo", onSubmitted }: { mode?: Mode; onS
   const [reason, setReason] = useState("");
   const [subScores, setSubScores] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
+  // 저장 실패 상태 (근본 · 이전엔 catch {}로 실패를 조용히 삼키고 "제출 완료"
+  // 표시. 응답이 유실됐다는 걸 사용자가 알 수 없어 나중에 집계 카드에 0건).
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const pick = async (n: number) => {
     try { await Haptics.selectionAsync(); } catch {}
@@ -118,6 +122,9 @@ export function NpsSurveyForm({ mode = "demo", onSubmitted }: { mode?: Mode; onS
 
   const submit = async () => {
     if (score === null) return;
+    if (submitting) return;
+    setSubmitting(true);
+    setSaveError(null);
     try { await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); } catch {}
     try {
       await saveResponse({
@@ -132,9 +139,16 @@ export function NpsSurveyForm({ mode = "demo", onSubmitted }: { mode?: Mode; onS
         },
         source: mode === "collect" ? "tablet" : "director-demo",
       });
-    } catch {}
-    setSubmitted(true);
-    onSubmitted?.();
+      setSubmitted(true);
+      onSubmitted?.();
+    } catch (err) {
+      // 저장 실패는 노출 · 응답 유실 대신 재시도 안내 (근본 · 우회 catch{} 제거)
+      const msg = err instanceof Error ? err.message : "저장 중 오류가 발생했습니다.";
+      setSaveError(`응답 저장 실패: ${msg}\n다시 시도해주세요.`);
+      try { await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error); } catch {}
+    } finally {
+      setSubmitting(false);
+    }
   };
   const reset = async () => {
     try { await Haptics.selectionAsync(); } catch {}
@@ -239,15 +253,23 @@ export function NpsSurveyForm({ mode = "demo", onSubmitted }: { mode?: Mode; onS
           ))}
         </View>
 
+        {/* 저장 실패 안내 · 이전엔 catch {}로 조용히 삼키던 오류를 노출 (근본) */}
+        {saveError && (
+          <View style={styles.errorBanner}>
+            <Feather name="alert-triangle" size={14} color="#DC2626" />
+            <Text style={styles.errorBannerText}>{saveError}</Text>
+          </View>
+        )}
+
         {/* 제출 */}
         <TouchableOpacity
-          style={[styles.submitBtn, score === null && styles.submitBtnDisabled]}
+          style={[styles.submitBtn, (score === null || submitting) && styles.submitBtnDisabled]}
           onPress={submit}
-          disabled={score === null}
+          disabled={score === null || submitting}
           activeOpacity={0.85}
         >
           <Text style={styles.submitBtnText}>
-            {submitted ? "재제출" : "제출하기"}
+            {submitting ? "저장 중..." : submitted ? "재제출" : "제출하기"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -389,6 +411,14 @@ const styles = StyleSheet.create({
   },
   submitBtnDisabled: { backgroundColor: "#CBD5E1" },
   submitBtnText: { color: "#FFFFFF", fontSize: 14, fontWeight: "700" as const },
+  // 저장 실패 배너 · catch {} 우회를 근본 픽스로 대체
+  errorBanner: {
+    flexDirection: "row" as const, alignItems: "flex-start" as const, gap: 8,
+    backgroundColor: "#FEF2F2", borderRadius: 10,
+    borderWidth: 1, borderColor: "#FECACA",
+    paddingHorizontal: 12, paddingVertical: 10, marginBottom: 8,
+  },
+  errorBannerText: { flex: 1, fontSize: 12, color: "#DC2626", fontWeight: "600" as const, lineHeight: 17 },
 
   // ── 결과 카드 ─────────────────────────────
   resultCard: {
