@@ -6,6 +6,11 @@ interface DoctorProfile {
   communicationSlider: number;
   chairSlider: number;
   managementType: "A" | "B" | null;
+  // 사용자가 이 프로파일을 명시적으로 조작했는가 (근본 픽스).
+  // 이전엔 "슬라이더 값이 0.5가 아니면 커스텀됨"으로 값 동등 판단 · 슬라이더를
+  // 정확히 0.5로 되돌리거나 pan 중심이 우연히 0.5면 "맞춤 안 함"으로 오판했음.
+  // 이제 setDoctorProfile이 호출될 때마다 true로 flip · defaultState에서는 false.
+  isCustomized: boolean;
 }
 
 interface AppState {
@@ -46,7 +51,7 @@ const defaultState: AppState = {
   clinicTenureYears: 3, // v0.4: REL 판정용 개원 연차 (0=신규, 3=안정기, 7+=성숙)
   isDemoMode: true,     // 실 EMR 연동 이전엔 항상 true
   questsCompleted: { quest1: false, quest2: false, quest3: false },
-  doctorProfile: { speedSlider: 0.5, communicationSlider: 0.5, chairSlider: 0.5, managementType: null },
+  doctorProfile: { speedSlider: 0.5, communicationSlider: 0.5, chairSlider: 0.5, managementType: null, isCustomized: false },
   period: "today",
   isDarkMode: false,
 };
@@ -136,7 +141,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const setDoctorProfile = (profile: Partial<DoctorProfile>) => {
-    setState((s) => ({ ...s, doctorProfile: { ...s.doctorProfile, ...profile } }));
+    // setDoctorProfile 호출 = 사용자가 명시적으로 조작 · isCustomized 자동 true
+    // (근본 · 값 동등 판단 오판 방지)
+    setState((s) => ({
+      ...s,
+      doctorProfile: { ...s.doctorProfile, ...profile, isCustomized: true },
+    }));
   };
 
   const setPeriod = (period: "today" | "week" | "month" | "quarter") => {

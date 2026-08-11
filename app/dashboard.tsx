@@ -181,8 +181,10 @@ function getAdjustedBenchmarks(p: DoctorProfileInput) {
   return { laborCost, noShow, caseAcceptance, cancelRate, uncollected, chairUtil, waitTime, recallRate, newPatientsMin };
 }
 
-function isProfileCustomized(p: DoctorProfileInput) {
-  return p.managementType !== null || p.speedSlider !== 0.5 || p.communicationSlider !== 0.5 || p.chairSlider !== 0.5;
+// 이전엔 슬라이더 값 동등으로 판단 (0.5가 아니면 커스텀). 슬라이더를 정확히 0.5로
+// 되돌리면 오판. 근본 픽스로 AppContext.doctorProfile.isCustomized 명시 flag 사용.
+function isProfileCustomized(p: DoctorProfileInput & { isCustomized?: boolean }) {
+  return p.isCustomized === true;
 }
 
 function profileLabel(p: DoctorProfileInput): string {
