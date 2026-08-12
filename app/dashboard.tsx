@@ -492,7 +492,7 @@ function DashboardInner() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.topBar}>
-        <Image source={require("@/assets/images/logo.png")} style={styles.headerLogo} contentFit="contain" />
+        <Image source={require("@/assets/images/logo.png")} style={styles.headerLogo} contentFit="contain" accessibilityLabel="myBrain 로고" />
         <View style={styles.headerCenter}>
           <Text style={styles.headerSub}>{clinicName || "병원명 미설정"}</Text>
         </View>
@@ -611,7 +611,7 @@ function DashboardInner() {
               <View style={styles.loadingBlock}>
                 <View style={styles.aiSpinner}><Feather name="cpu" size={28} color="#33A6FF" /></View>
                 <Text style={styles.loadingText}>AI 위기 분석 중...</Text>
-                <Text style={styles.loadingSubtext}>20대 KPI 벤치마크 실시간 연산 중</Text>
+                <Text style={styles.loadingSubtext}>20개 KPI 벤치마크 로드 중</Text>
               </View>
             ) : (() => {
               const isCrisis = (kpi: { current: number; benchmark: number; direction: string }) => {

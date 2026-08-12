@@ -71,7 +71,7 @@ export default function IntroScreen() {
           source={require("@/assets/images/logo.png")}
           style={styles.logo}
           contentFit="contain"
-        />
+        accessibilityLabel="myBrain 로고" />
       </Animated.View>
     </Pressable>
   );

@@ -31,8 +31,10 @@ export default function SignUpScreen() {
   const afterLogin = () => allQuestsCompleted ? "/dashboard" as const : "/(quest)" as const;
 
   const handleSignUp = async () => {
+    // 근본 · placeholder에 "6자 이상" 안내는 있으나 실 검증 없던 것 · Wave 4 ㉓
     if (!userId || !password) { setError("아이디와 비밀번호를 입력해주세요."); return; }
     if (userId.length < 4) { setError("아이디는 4자 이상 입력해주세요."); return; }
+    if (password.length < 6) { setError("비밀번호는 6자 이상 입력해주세요."); return; }
     setError("");
     setLoading(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -77,7 +79,7 @@ export default function SignUpScreen() {
             source={require("@/assets/images/logo.png")}
             style={styles.logo}
             contentFit="contain"
-          />
+          accessibilityLabel="myBrain 로고" />
           <Text style={styles.appName}>MYBRAIN</Text>
           <Text style={styles.tagline}>병원장 전용 AI 경영 관제탑</Text>
         </View>

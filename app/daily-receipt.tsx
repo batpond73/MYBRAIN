@@ -184,6 +184,8 @@ function DailyReceiptInner() {
             else router.replace("/dashboard");
           }}
           style={styles.backBtn}
+          accessibilityLabel="뒤로가기"
+          accessibilityRole="button"
         >
           <Feather name="arrow-left" size={22} color="#00153D" />
         </TouchableOpacity>

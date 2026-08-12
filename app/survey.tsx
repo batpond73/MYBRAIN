@@ -27,7 +27,7 @@ export default function SurveyScreen() {
             source={require("@/assets/images/logo.png")}
             style={styles.logo}
             contentFit="contain"
-          />
+          accessibilityLabel="myBrain 로고" />
           <View>
             <Text style={styles.brand}>myBrain 진료 만족도 설문</Text>
             <Text style={styles.brandSub}>익명 · 응답은 원장이 직접 검토합니다</Text>

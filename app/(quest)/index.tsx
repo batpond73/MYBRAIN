@@ -94,7 +94,7 @@ export default function QuestHome() {
       <LinearGradient colors={["#EBF5FF", "#FFFFFF"]} style={StyleSheet.absoluteFill} />
 
       <View style={styles.header}>
-        <Image source={require("@/assets/images/logo.png")} style={styles.logo} contentFit="contain" />
+        <Image source={require("@/assets/images/logo.png")} style={styles.logo} contentFit="contain" accessibilityLabel="myBrain 로고" />
         <View style={styles.headerText}>
           <Text style={styles.greeting}>우리 병원 종합검진</Text>
           <Text style={styles.subGreeting} numberOfLines={2}>3단계를 완료하면 AI 관제탑이 활성화됩니다</Text>

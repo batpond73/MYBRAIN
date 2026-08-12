@@ -62,7 +62,7 @@ export default function LoginScreen() {
       >
         {/* 로고 블록 */}
         <View style={styles.logoBlock}>
-          <Image source={require("@/assets/images/logo.png")} style={styles.logo} contentFit="contain" />
+          <Image source={require("@/assets/images/logo.png")} style={styles.logo} contentFit="contain" accessibilityLabel="myBrain 로고" />
           <Text style={styles.appName}>MYBRAIN</Text>
           <Text style={styles.tagline}>병원장 전용 AI 경영 관제탑</Text>
         </View>
