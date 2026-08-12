@@ -1157,6 +1157,4 @@ export function getKpiPrescription(kpiKey: string, period: Period): KpiPrescript
   );
 }
 
-export function hasKpiPrescription(kpiKey: string, period: Period): boolean {
-  return getKpiPrescription(kpiKey, period) !== undefined;
-}
+// hasKpiPrescription 제거 (Wave 3 ⑳): 참조 0건 · 필요 시 !!getKpiPrescription(...)로 대체 가능

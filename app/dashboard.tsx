@@ -2,7 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
+// LinearGradient import 제거 (Wave 3 ⑳): 파일 안 참조 0 · 다른 화면들은 사용
 import { Redirect, router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {

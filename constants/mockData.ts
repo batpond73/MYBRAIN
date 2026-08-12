@@ -1,43 +1,6 @@
-export const CLINIC_INFO = {
-  name: "서울나눔치과의원",
-  doctorName: "박지연 원장",
-  address: "서울시 강남구 테헤란로 123",
-  chairCount: 6,
-  staffCount: 8,
-  clinicTenureYears: 3, // v0.4: REL 판정 보정용 (0=신규·1년차, 3=안정기, 7+=성숙)
-};
-
-export const EMR_MOCK = {
-  PATIENT_ARRIVAL: [
-    { date: "2026-05-26", time: "09:15", waitMinutes: 12, chairMinutes: 45 },
-    { date: "2026-05-26", time: "10:30", waitMinutes: 28, chairMinutes: 60 },
-    { date: "2026-05-27", time: "14:00", waitMinutes: 8, chairMinutes: 35 },
-    { date: "2026-05-28", time: "11:00", waitMinutes: 5, chairMinutes: 50 },
-    { date: "2026-05-29", time: "15:30", waitMinutes: 35, chairMinutes: 70 },
-    { date: "2026-05-30", time: "09:00", waitMinutes: 15, chairMinutes: 40 },
-  ],
-  APPOINTMENT_RESERVED: [
-    { date: "2026-05-26", dayOfWeek: "월", totalSlots: 24, filled: 18, noShow: 2 },
-    { date: "2026-05-27", dayOfWeek: "화", totalSlots: 24, filled: 20, noShow: 1 },
-    { date: "2026-05-28", dayOfWeek: "수", totalSlots: 24, filled: 15, noShow: 3 },
-    { date: "2026-05-29", dayOfWeek: "목", totalSlots: 24, filled: 29, noShow: 0, overflow: true },
-    { date: "2026-05-30", dayOfWeek: "금", totalSlots: 24, filled: 22, noShow: 1 },
-  ],
-  CLINICAL_CONSULT: [
-    { date: "2026-05-26", type: "임플란트", consultCount: 4, successCount: 2, failReason: "비용 부담" },
-    { date: "2026-05-27", type: "교정", consultCount: 3, successCount: 2, failReason: "기간 부담" },
-    { date: "2026-05-28", type: "임플란트", consultCount: 5, successCount: 3, failReason: "타병원 비교" },
-    { date: "2026-05-29", type: "라미네이트", consultCount: 2, successCount: 1, failReason: "비용 부담" },
-    { date: "2026-05-30", type: "임플란트", consultCount: 3, successCount: 1, failReason: "비용 부담" },
-  ],
-  FINANCIAL_REVENUE: [
-    { date: "2026-05-26", revenue: 3850000, salary: 1540000, fixedCost: 980000, netProfit: 1330000 },
-    { date: "2026-05-27", revenue: 4200000, salary: 1540000, fixedCost: 980000, netProfit: 1680000 },
-    { date: "2026-05-28", revenue: 2900000, salary: 1540000, fixedCost: 980000, netProfit: 380000 },
-    { date: "2026-05-29", revenue: 5100000, salary: 1900000, fixedCost: 980000, netProfit: 2220000 },
-    { date: "2026-05-30", revenue: 3600000, salary: 1540000, fixedCost: 980000, netProfit: 1080000 },
-  ],
-};
+// CLINIC_INFO · EMR_MOCK 제거 (근본 · Wave 3 ⑱): 참조 0건 · 실 데이터 연동 시
+// EMR 스캔 결과가 그 자리를 대체. 데모용 하드코딩 병원 이름은 AppContext의
+// clinicName으로 관리 (이제 원장님이 편집 가능).
 
 // ── HR 데이터 (period별) ─────────────────────────────────────────
 // 좌측 "스마트 HR 관제" 패널. 인건비 비율·급여 vs 예산·스태프 리스트·
@@ -123,15 +86,7 @@ export const HR_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarter", H
   },
 };
 
-/** @deprecated Kept for backward compat — new code should use HR_DATA_BY_PERIOD. */
-export const HR_DATA = {
-  monthlyRevenue: HR_DATA_BY_PERIOD.month.totalRevenue,
-  monthlySalaryBudget: HR_DATA_BY_PERIOD.month.salaryBudget,
-  monthlySalaryActual: HR_DATA_BY_PERIOD.month.salaryActual,
-  salaryRatio: HR_DATA_BY_PERIOD.month.salaryRatio,
-  staffList: HR_DATA_BY_PERIOD.month.staffList,
-  weeklyData: HR_DATA_BY_PERIOD.month.bars.map((b) => ({ week: b.label, revenue: b.revenue, salary: b.salary })),
-};
+// HR_DATA @deprecated 제거 (Wave 3 ⑱) · 참조 0건 · 신규 코드는 HR_DATA_BY_PERIOD
 
 // ── 재무 & 심층 분석 데이터 (period별) ────────────────────────
 // 우측 "재무 & 심층 분석" 패널의 3카드 (노쇼 추이 · 상담 거절 사유 ·
@@ -521,23 +476,8 @@ export const FINANCE_DATA_BY_PERIOD: Record<"today" | "week" | "month" | "quarte
   },
 };
 
-/** @deprecated Kept for backward compat — new code should use FINANCE_DATA_BY_PERIOD. */
-export const FINANCE_DATA = {
-  noShowTrend: FINANCE_DATA_BY_PERIOD.month.noShowTrend.map((p) => ({ month: p.label, rate: p.rate })),
-  consultFailRate: [
-    { month: "1월", rate: 32 },
-    { month: "2월", rate: 28 },
-    { month: "3월", rate: 35 },
-    { month: "4월", rate: 42 },
-    { month: "5월", rate: 48 },
-  ],
-  rejectionReasons: FINANCE_DATA_BY_PERIOD.month.rejectionReasons,
-  bep: {
-    monthly: FINANCE_DATA_BY_PERIOD.month.bep.target,
-    current: FINANCE_DATA_BY_PERIOD.month.bep.current,
-    achievement: FINANCE_DATA_BY_PERIOD.month.bep.achievement,
-  },
-};
+// FINANCE_DATA @deprecated 제거 (Wave 3 ⑱) · 참조 0건 · consultFailRate 유령
+// 필드도 함께 사라짐 · 신규 코드는 FINANCE_DATA_BY_PERIOD
 
 export const PRESCRIPTIONS: Record<string, {
   status: "normal" | "warning" | "critical";
@@ -888,75 +828,10 @@ export const KPI_ALL20_BY_PERIOD: Record<PeriodKey, Kpi20Snapshot[]> = {
   ],
 };
 
-export const TREATMENT_MIX = {
-  month: "2026-05",
-  total: 78500000,
-  items: [
-    { category: "임플란트", code: "IMP", revenue: 32000000, ratio: 40.8, cases: 18 },
-    { category: "교정", code: "ORT", revenue: 18500000, ratio: 23.6, cases: 9 },
-    { category: "보철 (크라운·브릿지)", code: "PRO", revenue: 12800000, ratio: 16.3, cases: 34 },
-    { category: "보존 (충치·근관)", code: "CON", revenue: 8200000, ratio: 10.4, cases: 62 },
-    { category: "예방·스케일링", code: "PRE", revenue: 4100000, ratio: 5.2, cases: 48 },
-    { category: "기타", code: "ETC", revenue: 2900000, ratio: 3.7, cases: 21 },
-  ],
-};
-
-export const MARKETING_DATA = {
-  month: "2026-05",
-  totalSpend: 1720000,
-  channels: [
-    { channel: "네이버 플레이스 광고", spend: 800000, newPatients: 14, revenue: 5600000, roi: 600 },
-    { channel: "인스타그램·메타", spend: 500000, newPatients: 6, revenue: 2400000, roi: 380 },
-    { channel: "블로그 포스팅", spend: 300000, newPatients: 5, revenue: 1800000, roi: 500 },
-    { channel: "카카오 알림톡", spend: 120000, newPatients: 3, revenue: 1200000, roi: 900 },
-  ],
-  totalNewPatientsFromMarketing: 28,
-  totalRevenueFromMarketing: 11000000,
-  overallRoi: 540,
-};
-
-export const ONLINE_REVIEWS = {
-  naver: { score: 4.7, reviewCount: 312, recentTrend: "상승", keywords: ["친절", "깨끗", "빠른 진료", "설명 자세"] },
-  google: { score: 4.5, reviewCount: 89, recentTrend: "유지", keywords: ["professional", "clean", "friendly"] },
-  monthlyNewReviews: 18,
-  sentimentPositive: 82,
-  sentimentNeutral: 13,
-  sentimentNegative: 5,
-};
-
-export const NPS_DATA = {
-  month: "2026-05",
-  surveySent: 145,
-  surveyResponded: 62,
-  responseRate: 42.8,
-  promoters: 38,
-  passives: 17,
-  detractors: 7,
-  npsScore: 50,
-  trend: [
-    { month: "1월", score: 42 },
-    { month: "2월", score: 45 },
-    { month: "3월", score: 41 },
-    { month: "4월", score: 48 },
-    { month: "5월", score: 50 },
-  ],
-};
-
-export const FIXED_COST_DETAIL = {
-  month: "2026-05",
-  items: [
-    { category: "임대료+관리비", amount: 5430000 },
-    { category: "감가상각 (장비·인테리어)", amount: 1200000 },
-    { category: "의료기기 리스료", amount: 980000 },
-    { category: "전기·수도·가스", amount: 680000 },
-    { category: "건물 보험료", amount: 320000 },
-    { category: "통신·인터넷", amount: 190000 },
-    { category: "소프트웨어 구독", amount: 150000 },
-    { category: "기타 고정비", amount: 250000 },
-  ],
-  total: 9200000,
-  revenueRatio: 11.7,
-};
+// TREATMENT_MIX · MARKETING_DATA · ONLINE_REVIEWS · NPS_DATA · FIXED_COST_DETAIL
+// 5개 상수 제거 (근본 · Wave 3 ⑱): 참조 0건 · 대시보드에 부속 카드로 붙일 예정
+// 이었으나 실제로는 붙지 않아 껍데기만 남은 상태. 실 데이터 연동 시 각 지표는
+// KPI_ALL20_BY_PERIOD·FINANCE_DATA_BY_PERIOD·NPS npsStorage를 통해 노출됨.
 
 export const VOICE_PARSE_EXAMPLES = [
   {
