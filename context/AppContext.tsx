@@ -26,7 +26,12 @@ interface AppState {
   questsCompleted: { quest1: boolean; quest2: boolean; quest3: boolean };
   doctorProfile: DoctorProfile;
   period: "today" | "week" | "month" | "quarter";
-  isDarkMode: boolean;
+  // isDarkMode 제거 (근본 · 우회·쌓기 전수조사 ⑭):
+  //   toggleDarkMode 함수와 state는 있었으나 참조하는 UI가 하나도 없어 dead code.
+  //   dark 팔레트도 constants/colors.ts에 정의만 있고 화면들은 인라인 색 사용.
+  //   실제 다크모드 구현 시 (a) state 재도입 (b) colors.dark 참조 (c) 화면별
+  //   인라인 색 → useColors() 훅으로 이관 3단계 필요. 지금은 빈 스위치를 남겨
+  //   놓는 게 더 오해 소지 큼 · 완전 제거하고 실 구현 시 재도입.
 }
 
 interface AppContextType extends AppState {
@@ -38,9 +43,9 @@ interface AppContextType extends AppState {
   setDoctorProfile: (profile: Partial<DoctorProfile>) => void;
   setClinicName: (name: string) => void;
   setPeriod: (period: "today" | "week" | "month" | "quarter") => void;
-  toggleDarkMode: () => void;
   markIntroSeen: () => Promise<void>;
   allQuestsCompleted: boolean;
+  // toggleDarkMode 제거 (근본 · Wave 2 ⑭). 실 구현 시 재도입.
 }
 
 const defaultState: AppState = {
@@ -53,7 +58,7 @@ const defaultState: AppState = {
   questsCompleted: { quest1: false, quest2: false, quest3: false },
   doctorProfile: { speedSlider: 0.5, communicationSlider: 0.5, chairSlider: 0.5, managementType: null, isCustomized: false },
   period: "today",
-  isDarkMode: false,
+  // isDarkMode 제거 (Wave 2 ⑭ 근본)
 };
 
 const AppContext = createContext<AppContextType>({
@@ -65,7 +70,6 @@ const AppContext = createContext<AppContextType>({
   setDoctorProfile: () => {},
   setClinicName: () => {},
   setPeriod: () => {},
-  toggleDarkMode: () => {},
   markIntroSeen: async () => {},
   allQuestsCompleted: false,
 });
@@ -153,10 +157,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setState((s) => ({ ...s, period }));
   };
 
-  const toggleDarkMode = () => {
-    setState((s) => ({ ...s, isDarkMode: !s.isDarkMode }));
-  };
-
   const markIntroSeen = async () => {
     setState((s) => ({ ...s, hasSeenIntro: true }));
   };
@@ -166,7 +166,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ ...state, isLoaded, login, logout, completeQuest, setDoctorProfile, setClinicName, setPeriod, toggleDarkMode, markIntroSeen, allQuestsCompleted }}
+      value={{ ...state, isLoaded, login, logout, completeQuest, setDoctorProfile, setClinicName, setPeriod, markIntroSeen, allQuestsCompleted }}
     >
       {children}
     </AppContext.Provider>

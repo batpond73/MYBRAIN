@@ -86,15 +86,17 @@ export default function SignUpScreen() {
         <View style={styles.formBlock}>
           <Text style={styles.formTitle}>3초 만에 시작하기</Text>
 
-          {/* 소셜 로그인 */}
+          {/* 소셜 로그인 (미리보기 · 실 OAuth 미연결) · handleAppleMock/GoogleMock
+             함수명 자체가 mock임을 시사. 실 연동 전까지 "미리보기" 라벨 명시.
+             근본 픽스: 이전엔 "Apple로 계속하기" 문구로 실제 로그인처럼 표시. */}
           <TouchableOpacity style={styles.socialBtn} onPress={handleAppleMock} activeOpacity={0.85}>
             <Feather name="smartphone" size={18} color="#00153D" />
-            <Text style={styles.socialBtnText}>Apple로 계속하기</Text>
+            <Text style={styles.socialBtnText}>Apple로 계속하기 · 미리보기</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.socialBtn, styles.googleBtn]} onPress={handleGoogleMock} activeOpacity={0.85}>
             <Feather name="globe" size={18} color="#EA4335" />
-            <Text style={[styles.socialBtnText, { color: "#00153D" }]}>Google로 계속하기</Text>
+            <Text style={[styles.socialBtnText, { color: "#00153D" }]}>Google로 계속하기 · 미리보기</Text>
           </TouchableOpacity>
 
           {/* 구분선 */}

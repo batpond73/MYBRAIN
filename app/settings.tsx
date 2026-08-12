@@ -3,7 +3,7 @@ import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { Redirect, router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Animated, LayoutAnimation, Modal, PanResponder, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, UIManager, View } from "react-native";
+import { Alert, Animated, LayoutAnimation, Modal, PanResponder, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HomeFab } from "@/components/HomeFab";
@@ -80,7 +80,6 @@ export default function Settings() {
 function SettingsInner() {
   const insets = useSafeAreaInsets();
   const { clinicName, userId, questsCompleted, doctorProfile, setDoctorProfile, setClinicName, logout } = useAppContext();
-  const [notify, setNotify] = useState(true);
   const [expandedKpiId, setExpandedKpiId] = useState<number | null>(null);
   // 병원명 편집 모달 상태 (근본 · 이전엔 로그인 시 하드코딩된 병원명 저장되어
   // 원장님이 자기 병원명을 못 넣는 상태였음)
@@ -435,19 +434,11 @@ function SettingsInner() {
         </View>
 
         {/* 앱 설정 */}
+        {/* AI 알림 수신 스위치 제거 (근본 · Wave 2 ⑮). expo-notifications 미도입 ·
+           로컬 state로만 저장되어 실 알림 기능 없이 스위치만 있던 상태. 실 도입 시
+           재추가. */}
         <Text style={styles.sectionLabel}>앱 설정</Text>
         <View style={styles.card}>
-          <View style={styles.settingRow}>
-            <Feather name="bell" size={18} color="#64748B" />
-            <Text style={styles.settingLabel}>AI 알림 수신</Text>
-            <Switch
-              value={notify}
-              onValueChange={setNotify}
-              trackColor={{ false: "#E8EDF5", true: "#33A6FF" }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
-          <View style={styles.divider} />
           <TouchableOpacity
             style={styles.settingRow}
             activeOpacity={0.75}

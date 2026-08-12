@@ -74,12 +74,12 @@ export default function LoginScreen() {
           {/* 소셜 로그인 */}
           <TouchableOpacity style={styles.socialBtn} onPress={handleAppleMock} activeOpacity={0.85}>
             <Feather name="smartphone" size={18} color="#00153D" />
-            <Text style={styles.socialBtnText}>Apple로 계속하기</Text>
+            <Text style={styles.socialBtnText}>Apple로 계속하기 · 미리보기</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.socialBtn, styles.googleBtn]} onPress={handleGoogleMock} activeOpacity={0.85}>
             <Feather name="globe" size={18} color="#EA4335" />
-            <Text style={[styles.socialBtnText, { color: "#00153D" }]}>Google로 계속하기</Text>
+            <Text style={[styles.socialBtnText, { color: "#00153D" }]}>Google로 계속하기 · 미리보기</Text>
           </TouchableOpacity>
 
           {/* 구분선 */}
