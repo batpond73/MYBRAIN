@@ -4,13 +4,13 @@
  * benefitDirection: "higher" | "lower" | "stable"  ← history.tsx 화살표 표시용
  *
  * 설계 의도 명시 (근본 · 우회·쌓기 전수조사 항목 ⑫):
- *   각 entry의 status는 hand-crafted mock story · lib/kpiEngine.ts의
- *   evaluateKpiStatus 재판정으로 재현되지 않는 케이스가 있음. 이는 실 데이터
- *   연동 전 데모 목적의 서사 데이터라 의도적으로 story-driven하게 배치됨:
+ *   각 entry의 status는 hand-crafted mock story · 순수 임계값 재판정으로 재현되지
+ *   않는 케이스가 있음. 이는 실 데이터 연동 전 데모 목적의 서사 데이터라 의도적
+ *   으로 story-driven하게 배치됨:
  *     - 위기 → 개선 사례 · 6개월 동안 실장님 액션 도입 결과
  *     - 만성 지표 · 3개월 연속 위기
  *     - 안정 관리 · 정상 밴드 내에서 소폭 변동
- *   실 데이터 연동 시 status는 각 값에서 kpiEngine으로 재계산되도록 이관 필요.
+ *   실 데이터 연동 시 status는 각 값에서 판정 엔진으로 재계산되도록 이관 필요.
  *   그때까지는 이 파일이 story-driven mock의 진실원.
  */
 
