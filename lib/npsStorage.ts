@@ -56,13 +56,20 @@ export async function saveResponse(input: Omit<NpsResponse, "id" | "createdAt">)
 }
 
 export async function loadResponses(): Promise<NpsResponse[]> {
+  // catch에서 조용히 빈 배열 반환하던 우회를 진단 로그로 보완 (Wave 3 ㉑ 근본).
+  // "저장 안 됨"과 "저장된 JSON 손상"을 구분해서 콘솔에 남김 · 향후 백엔드
+  // 도입 시 여기가 재시도·복원 훅 지점.
   try {
     const raw = await AsyncStorage.getItem(KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
+    if (!Array.isArray(parsed)) {
+      console.warn("[npsStorage] mybrain_nps_responses가 배열이 아님 · 빈 배열로 복구");
+      return [];
+    }
     return parsed;
-  } catch {
+  } catch (err) {
+    console.warn("[npsStorage] loadResponses 실패", err);
     return [];
   }
 }

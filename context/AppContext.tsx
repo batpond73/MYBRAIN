@@ -88,7 +88,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           // 이전엔 명시적으로 리셋하던 걸 정정 — 재로그인·재방문 UX 마찰 큼.
           setState({ ...defaultState, ...parsed });
         }
-      } catch {} finally {
+      } catch (err) {
+        // catch에서 조용히 사용자 자동 로그아웃되던 우회를 진단 로그로 보완
+        // (Wave 3 ㉑ 근본). JSON.parse 실패는 저장본 손상 시 원인 파악용.
+        console.warn("[AppContext] mybrain_state 복원 실패 · defaultState로 시작", err);
+      } finally {
         // Gate initial navigation until AsyncStorage restore settles,
         // so children (e.g. (tabs)/index.tsx) don't fire <Redirect> before
         // the Root Layout finishes mounting.
@@ -115,7 +119,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // 저장하도록 useEffect로 단일화.
   useEffect(() => {
     if (!isLoaded) return;
-    AsyncStorage.setItem("mybrain_state", JSON.stringify(state)).catch(() => {});
+    AsyncStorage.setItem("mybrain_state", JSON.stringify(state)).catch((err) => {
+      console.warn("[AppContext] persist 실패", err); // ㉑ 근본 · 조용히 삼키지 않음
+    });
   }, [state, isLoaded]);
 
   // clinicName 규약 (근본):
